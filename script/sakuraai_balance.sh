@@ -189,7 +189,6 @@ for vm in /proc/sys/vm
         echo 1 > "$vm/compaction_proactiveness"
         echo 1 > "$vm/watermark_boost_factor"
         echo 20 > "$vm/watermark_scale_factor"
-        echo 2 > "$vm/drop_caches"
     done
     for sw in /dev/memcg
     do
