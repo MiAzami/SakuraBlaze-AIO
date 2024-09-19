@@ -122,18 +122,6 @@ echo "1" > /proc/sys/net/ipv4/tcp_ecn
 echo "1" > /proc/sys/net/ipv4/tcp_sack
 echo "1" > /proc/sys/net/ipv4/tcp_timestamps
 
-#SurfaceFlinger 
-resetprop -n persist.sys.phh.enable_sf_gl_backpressure 0
-resetprop -n persist.sys.phh.enable_sf_hwc_backpressure 0
-resetprop -n debug.sf.disable_client_composition_cache 1
-resetprop -n debug.sf.latch_unsignaled 1
-resetprop -n debug.sf.disable_backpressure 1
-resetprop -n debug.sf.enable_gl_backpressure 0
-resetprop -n debug.sf.enable_hwc_vds 1
-resetprop -n persist.sys.sf.native_mode 1
-resetprop -n debug.sf.hw 1
-resetprop -n debug.sf.enable_layer_caching 0
-
 # Done
 sleep 1
 sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=[ 🌦 Sakura will grow ] /g' "$MODDIR/module.prop"
