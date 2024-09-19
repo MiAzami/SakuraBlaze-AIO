@@ -41,7 +41,7 @@ uninstall_busybox()
 #install_busybox
 
 #uninstall_busybox
-
+echo 3 > /proc/sys/vm/drop_caches
 # Deepsleep functions
 doze_disable()
 {
