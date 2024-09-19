@@ -211,10 +211,6 @@ for cs in /dev/cpuset
         echo 0 > "$cs/foreground/sched_load_balance"
     done
 
-
-settings put system min_refresh_rate 0
-settings put system peak_refresh_rate 120
-
 sleep 1
 # Set balance
 setprop sakuraai.mode balance
