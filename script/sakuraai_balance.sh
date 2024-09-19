@@ -19,68 +19,8 @@ read_file(){
 BASEDIR=/data/adb/modules/SakuraAi
 LOG=/storage/emulated/0/SakuraAi/Balance.log
 
-service call SurfaceFlinger 1008 i32 0
+service call SurfaceFlinger 1008 i32 1
 
-# GED Hal ( Kernel) 
-chmod 644 /sys/kernel/fpsgo/fbt/*
-for fbt in /sys/kernel/fpsgo/fbt
-    do
-        echo 0 > "$fbt/boost_ta"
-        echo 0 > "$fbt/enable_switch_sync_flag"
-        echo 0 > "$fbt/enable_ceiling"
-    chmod 444 /sys/kernel/fpsgo/fbt/*
-    done
-    
-# GED Hal ( Kernel) 
-chmod 644 /sys/kernel/fpsgo/fstb/*
-for fstb in /sys/kernel/fpsgo/fstb
-    do
-        echo 0 > "$fstb/set_render_max_fps"
-        echo 0 > "$fstb/adopt_low_fps"
-        echo 0 > "$fstb/enable_ceiling"
-        echo 0 > "$fstb/margin_mode"
-    chmod 444 /sys/kernel/fpsgo/fstb/*
-    done
-    
-# GED Hal ( Kernel) 
-for gedh in /sys/kernel/ged/hal
-    do
-        echo 1 > "$gedh/gpu_boost_level"
-        echo 4 > "$gedh/loading_base_dvfs_step"
-    done
-
-# GED Parameter (Module) 
-for gedp in /sys/module/ged/parameters
-    do
-        echo 0 > "$gedp/ged_smart_boost"
-        echo 0 > "$gedp/enable_gpu_boost"
-        echo 0 > "$gedp/ged_boost_enable"
-        echo 0 > "$gedp/boost_gpu_enable"
-        echo 0 > "$gedp/is_GED_KPI_enabled"
-        echo 0 > "$gedp/ged_monitor_3D_fence_disable"
-        echo 0 > "$gedp/gpu_dvfs_enable"
-        echo 0 > "$gedp/gx_fb_dvfs_margin"
-        echo 0 > "$gedp/gpu_idle"
-	done
-
-# FPSGo (PNPMGR) 
-for pnp in /sys/pnpmgr
-    do
-        echo 1 > "$pnp/fpsgo_boost/boost_mode"
-        echo 1 > "$pnp/install"
-        echo 1 > "$pnp/mwn"
-        echo 0 > "$pnp/fpsgo_boost/fstb/fstb_tune_quantile"
-        echo 0 > "$pnp/fpsgo_boost/fstb/fstb_fix_fps"
-    done
-    
-# MTKFPS GO Parameter
-for fpsp in /sys/module/mtk_fpsgo/parameters
-    do
-        echo 0 > "$fpsp/boost_affinity"
-        echo 0 > "$fpsp/boost_LR"
-        echo 0 > "$fpsp/xgf_uboost"
-    done
-    
 # CPU SET
 for cpus in /sys/devices/system/cpu
     do
