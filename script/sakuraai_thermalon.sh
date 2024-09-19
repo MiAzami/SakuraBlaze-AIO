@@ -31,7 +31,7 @@ echo "1000000" > /sys/kernel/thermal_trace/hr_period
 start thermald
 start thermal_core
 start vendor.thermal-hal-2-0.mtk
-start mi_thermal
+start mi_thermald
 
 resetprop -n -v ro.esports.thermal_config.support 1
 resetprop -n -v dalvik.vm.dexopt.thermal-cutoff 2
