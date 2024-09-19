@@ -42,4 +42,4 @@ echo " •> Thermal Off at $(date "+%H:%M:%S")" >> $LOG
 
 # Run Ai
 sleep 1
-nohup sh $MODDIR/script/sakuraai_thermaloff.sh &
+nohup sh $MODDIR/script/sakuraai_auto.sh &
