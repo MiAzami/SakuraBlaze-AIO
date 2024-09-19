@@ -182,7 +182,7 @@ for sch in /proc/sys/kernel
         echo 2 > "$sda/rq_affinity"
         echo 0 > "$sda/rotational"
         echo 128 > "$sda/nr_requests"
-        echo 1024 > "$sda/read_ahead_kb"
+        echo 2048 > "$sda/read_ahead_kb"
     done
     for sdb in /sys/block/sdb/queue
     do
@@ -192,7 +192,7 @@ for sch in /proc/sys/kernel
         echo 2 > "$sdb/rq_affinity"
         echo 0 > "$sdb/rotational"
         echo 128 > "$sdb/nr_requests"
-        echo 1024 > "$sdb/read_ahead_kb"
+        echo 2048 > "$sdb/read_ahead_kb"
     done
     for sdc in /sys/block/sdc/queue
     do
@@ -202,7 +202,7 @@ for sch in /proc/sys/kernel
         echo 2 > "$sdc/rq_affinity"
         echo 0 > "$sdc/rotational"
         echo 128 > "$sdc/nr_requests"
-        echo 1024 > "$sdc/read_ahead_kb"
+        echo 2048 > "$sdc/read_ahead_kb"
     done
     for dm0 in /sys/block/dm-0/queue
     do
@@ -212,13 +212,13 @@ for sch in /proc/sys/kernel
         echo 2 > "$dm0/rq_affinity"
         echo 0 > "$dm0/rotational"
         echo 128 > "$dm0/nr_requests"
-        echo 1024 > "$dm0/read_ahead_kb"
+        echo 2048 > "$dm0/read_ahead_kb"
     done
     
     # I/O scheduler
     for queue in /sys/block/*/queue
     do
-        echo 1024 > "$queue/read_ahead_kb"
+        echo 2048 > "$queue/read_ahead_kb"
         echo 128 > "$queue/nr_requests"
         echo 2 > "$queue/rq_affinity"
         echo 2 > "$dm0/nomerges"
