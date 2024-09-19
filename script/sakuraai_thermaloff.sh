@@ -36,8 +36,6 @@ stop thermal_core
 stop vendor.thermal-hal-2-0.mtk
 stop mi_thermald
 
-for a in $(getprop|grep thermal|cut -f1 -d]|cut -f2 -d[|grep -F init.svc.|sed 's/init.svc.//');do stop $a;done;for b in $(getprop|grep thermal|cut -f1 -d]|cut -f2 -d[|grep -F init.svc.);do setprop $b stopped;done;for c in $(getprop|grep thermal|cut -f1 -d]|cut -f2 -d[|grep -F init.svc_);do setprop $c "";done;for e in $(find /sys/ -name throttling);do stop "$(echo $d|cut -d. -f3)";done
-
 # Set perf
 setprop thermal.mode off
 echo " •> Thermal Off at $(date "+%H:%M:%S")" >> $LOG
