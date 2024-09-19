@@ -82,6 +82,77 @@ ui_print "  • Volume - (Select)"
 ui_print ""
 sleep 3
 
+# Define external variables
+BPATH="$TMPDIR/system/xbin"
+a="$MODPATH/system/xbin"
+MODVER="$(grep_prop version ${TMPDIR}/module.prop)"
+
+deploy() {
+    unzip -qo "$ZIPFILE" 'system/*' -d $TMPDIR
+
+    # Check if busybox is already installed
+    if [ -f "$a/busybox" ]; then
+        ui_print "BusyBox is already installed. Skipping installation..."
+        return
+    fi
+
+    # Init
+    set_perm "$BPATH/busybox*" 0 0 777
+
+    # Detect Architecture
+    case "$ARCH" in
+        "arm64")
+            mv -f $BPATH/busybox-arm64 $a/busybox
+            ;;
+    esac
+}
+
+# If there's no existing module, clean up any other busybox modules
+if ! [ -d "/data/adb/modules/${MODID}" ]; then
+    find /data/adb/modules -maxdepth 1 -name -type d | while read -r another_bb; do
+        wleowleo="$(echo "$another_bb" | grep -i 'busybox')"
+        if [ -n "$wleowleo" ] && [ -d "$wleowleo" ] && [ -f "$wleowleo/module.prop" ]; then
+            touch "$wleowleo"/remove
+        fi
+    done            
+fi
+
+# If the module is already installed, remove the installed flag
+if [ -d "/data/adb/modules/${MODID}" ] && [ -f "/data/adb/modules/${MODID}/installed" ]; then
+    rm -f /data/adb/modules/${MODID}/installed
+fi
+
+# Extract and deploy binaries
+deploy
+
+# Built-in busybox
+ui_print "  📦 Install busybox..."
+ui_print "    1. Yes"
+ui_print "    2. Uninstall Busybox"
+ui_print "    3. No"
+ui_print ""
+ui_print "    Select:"
+A=1
+while true; do
+    ui_print "    $A"
+    if $VKSEL; then
+        A=$((A + 1))
+    else
+        break
+    fi
+    if [ $A -gt 3 ]; then
+        A=1
+    fi
+done
+ui_print "    Selected: $A"
+case $A in
+    1 ) TEXT1="Install Busybox"; sed -i '/#install_busybox/s/.*/install_busybox/' $MODPATH/post-fs-data.sh;;
+    2 ) TEXT1="Uninstall Busybox"; sed -i '/#uninstall_busybox/s/.*/uninstall_busybox/' $MODPATH/post-fs-data.sh;;
+    3 ) TEXT1="Skip Install Busybox";;
+esac
+ui_print "    $TEXT1"
+ui_print ""
+
 # Zram
 ui_print "  ➡️ ZRAM size..."
 ui_print "    1. Default(using default zram from device)"
