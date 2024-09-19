@@ -36,8 +36,6 @@ start mi_thermald
 resetprop -n -v ro.esports.thermal_config.support 1
 resetprop -n -v dalvik.vm.dexopt.thermal-cutoff 2
 
-for a in $(getprop|grep thermal|cut -f1 -d]|cut -f2 -d[|grep -F init.svc.|sed 's/init.svc.//');do start $a;done;for b in $(getprop|grep thermal|cut -f1 -d]|cut -f2 -d[|grep -F init.svc.);do start $b;done;for c in $(getprop|grep thermal|cut -f1 -d]|cut -f2 -d[|grep -F init.svc_);do start $c;done;for e in $(find /sys/ -name throttling);do start "$(echo $d|cut -d. -f3)";done
-
 # Set on
 setprop thermal.mode on
 echo " •> Thermal On at $(date "+%H:%M:%S")" >> $LOG
