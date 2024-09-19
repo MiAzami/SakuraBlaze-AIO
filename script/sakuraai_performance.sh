@@ -20,61 +20,6 @@ LOG=/storage/emulated/0/SakuraAi/Performance.log
 
 service call SurfaceFlinger 1008 i32 1
 
-# GED Hal ( Kernel) 
-chmod 644 /sys/kernel/fpsgo/fstb/*
-for fbt in /sys/kernel/fpsgo/fstb
-    do
-        echo 95 > "$fbt/boost_ta"
-        echo 0 > "$fbt/enable_switch_sync_flag"
-    done
-    chmod 444 /sys/kernel/fpsgo/fstb/*
-    
-# GED Hal ( Kernel) 
-chmod 644 /sys/kernel/fpsgo/fbt/*
-for fstb in /sys/kernel/fpsgo/fbt
-    do
-        echo 120 > "$fstb/set_render_max_fps"
-    chmod 444 /sys/kernel/fpsgo/fbt/*
-    done
-    
-# GED Hal ( Kernel) 
-for gedh in /sys/kernel/ged/hal
-    do
-        echo 95 > "$gedh/gpu_boost_level"
-        echo 8 > "$gedh/loading_base_dvfs_step"
-    done
-
-# GED Parameter (Module) 
-for gedp in /sys/module/ged/parameters
-    do
-        echo 120 > "$gedp/ged_smart_boost"
-        echo 1 > "$gedp/enable_gpu_boost"
-        echo 1 > "$gedp/ged_boost_enable"
-        echo 1 > "$gedp/boost_gpu_enable"
-        echo 1 > "$gedp/gpu_dvfs_enable"
-        echo 95 > "$gedp/gx_fb_dvfs_margin"
-        echo 100 > "$gedp/gpu_idle"
-        echo 0 > "$gedp/is_GED_KPI_enabled"
-	done
-
-# FPSGo (PNPMGR) 
-for pnp in /sys/pnpmgr
-    do
-        echo 1 > "$pnp/fpsgo_boost/boost_mode"
-        echo 1 > "$pnp/install"
-        echo 1 > "$pnp/mwn"
-        echo 100 > "$pnp/fpsgo_boost/fstb/fstb_tune_quantile"
-        echo 120 > "$pnp/fpsgo_boost/fstb/fstb_fix_fps"
-    done
-    
-# MTKFPS GO Parameter
-for fpsp in /sys/module/mtk_fpsgo/parameters
-    do
-        echo 120 > "$fpsp/boost_affinity"
-        echo 120 > "$fpsp/boost_LR"
-        echo 120 > "$fpsp/xgf_uboost"
-    done
-
 # CPU SET
 for cpus in /sys/devices/system/cpu
     do
