@@ -82,6 +82,8 @@ while true; do
    fi
 done &
 
+thermalmode()
+{
 # Start AI for thermal.mode
 setprop thermal.mode notset
 while true; do
@@ -122,5 +124,8 @@ while true; do
       fi
    fi
 done &
+}
 
+# thermal mode
+#thermalmode
 wait  # Wait for both background processes to finish
