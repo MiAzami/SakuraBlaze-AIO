@@ -47,10 +47,6 @@ echo "-1" > /proc/gpufreqv2/fix_target_opp_index
 echo "simple_ondemand" > /sys/class/devfreq/mtk-dvfsrc-devfreq/governor
 echo "simple_ondemand" > /sys/class/devfreq/13000000.mali/governor
 echo "coarse_demand" > /sys/class/misc/mali0/device/power_policy
-echo "-1" > /proc/gpufreqv2/fix_custom_freq_volt
-echo "1" > /proc/gpufreqv2/mfgsys_power_control
-echo "0" > /proc/gpufreqv2/gpm_mode
-echo "-1" > /proc/gpufreqv2/fix_target_opp_index
 
 # CPU SET
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
@@ -99,7 +95,7 @@ for sch in /proc/sys/kernel
     do
         echo 100000 > "$sch/sched_migration_cost_ns"
         echo 60 > "$sch/perf_cpu_time_max_percent"
-        echo 100000 > "$sch/sched_latency_ns"
+        echo 1000000 > "$sch/sched_latency_ns"
         echo 1024 > "$sch/sched_util_clamp_max"
         echo 256 > "$sch/sched_util_clamp_min"
         echo 2 > "$sch/sched_tunable_scaling"
@@ -183,7 +179,7 @@ for vm in /proc/sys/vm
     do
         echo 25 > "$vm/dirty_background_ratio"
         echo 30 > "$vm/dirty_ratio"
-        echo 40 > "$vm/vfs_cache_pressure"
+        echo 80 > "$vm/vfs_cache_pressure"
         echo 300 > "$vm/dirty_expire_centisecs"
         echo 500 > "$vm/dirty_writeback_centisecs"
         echo 0 > "$vm/oom_dump_tasks"
