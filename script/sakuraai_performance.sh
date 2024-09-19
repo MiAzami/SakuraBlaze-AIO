@@ -239,9 +239,6 @@ am force-stop com.instagram.android
 am force-stop com.facebook.lite
 am kill-all
 
-settings put system min_refresh_rate 120
-settings put system peak_refresh_rate 120
-
 # Set perf
 setprop sakuraai.mode performance
 echo " •> Gaming mode activated at $(date "+%H:%M:%S")" >> $LOG
