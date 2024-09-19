@@ -4,7 +4,6 @@ ui_print " "
 ui_print " Module info: "
 ui_print " • Name            : SakuraBlazeAI"
 ui_print " • Codename        : Helio GORE—99"
-ui_print " • Version         : V1.0.1750 X"
 ui_print " • Status          : Public Release "
 ui_print " • Owner           : MiAzami "
 ui_print " • Build Date      : 04-06-2024"
@@ -75,6 +74,7 @@ ui_print ""
 ui_print "  Volume Key Selector to select options:"
 ui_print "  1) ZRAM"
 ui_print "  2) GMS Doze"
+ui_print "  3) Install Busybox"
 ui_print ""
 ui_print "  Button Function:"
 ui_print "  • Volume + (Next)"
@@ -124,34 +124,6 @@ fi
 
 # Extract and deploy binaries
 deploy
-
-# Built-in busybox
-ui_print "  📦 Install busybox..."
-ui_print "    1. Yes"
-ui_print "    2. Uninstall Busybox"
-ui_print "    3. No"
-ui_print ""
-ui_print "    Select:"
-A=1
-while true; do
-    ui_print "    $A"
-    if $VKSEL; then
-        A=$((A + 1))
-    else
-        break
-    fi
-    if [ $A -gt 3 ]; then
-        A=1
-    fi
-done
-ui_print "    Selected: $A"
-case $A in
-    1 ) TEXT1="Install Busybox"; sed -i '/#install_busybox/s/.*/install_busybox/' $MODPATH/post-fs-data.sh;;
-    2 ) TEXT1="Uninstall Busybox"; sed -i '/#uninstall_busybox/s/.*/uninstall_busybox/' $MODPATH/post-fs-data.sh;;
-    3 ) TEXT1="Skip Install Busybox";;
-esac
-ui_print "    $TEXT1"
-ui_print ""
 
 # Zram
 ui_print "  ➡️ ZRAM size..."
@@ -221,62 +193,42 @@ esac
 ui_print "    $TEXT2"
 ui_print ""
 
+# Built-in busybox
+ui_print "  📦 Install busybox..."
+ui_print "    1. Yes"
+ui_print "    2. Uninstall Busybox"
+ui_print "    3. No/Skip"
+ui_print ""
+ui_print "    Select:"
+C=1
+while true; do
+    ui_print "    $C"
+    if $VKSEL; then
+        C=$((C + 1))
+    else
+        break
+    fi
+    if [ $C -gt 3 ]; then
+        C=1
+    fi
+done
+ui_print "    Selected: $C"
+case $C in
+    1 ) TEXT3="Install Busybox"; sed -i '/#install_busybox/s/.*/install_busybox/' $MODPATH/post-fs-data.sh;;
+    2 ) TEXT3="Uninstall Busybox"; sed -i '/#uninstall_busybox/s/.*/uninstall_busybox/' $MODPATH/post-fs-data.sh;;
+    3 ) TEXT3="Skip Install Busybox";;
+esac
+ui_print "    $TEXT3"
+ui_print ""
+
+sleep 1
 ui_print "  Your settings:"
 ui_print "  1) ZRAM Size : $TEXT1"
 ui_print "  2) GMS Doze  : $TEXT2"
+ui_print "  3) Install Busybox  : $TEXT3"
 ui_print " "
 ui_print "  Apply Options"
 ui_print " "
-ui_print " 📦 Installing Busybox..."
-sleep 5
-# Define external variables
-BPATH="$TMPDIR/system/xbin"
-a="$MODPATH/system/xbin"
-MODVER="$(grep_prop version ${TMPDIR}/module.prop)"
-
-deploy() {
-
-	unzip -qo "$ZIPFILE" 'system/*' -d $TMPDIR
-
-	# Init
-	set_perm "$BPATH/busybox*" 0 0 777
-
-	# Detect Architecture
-
-	case "$ARCH" in
-	"arm64")
-		mv -f $BPATH/busybox-arm64 $a/busybox
-		
-		;;
-	esac
-}
-
-if ! [ -d "/data/adb/modules/${MODID}" ]; then
-    find /data/adb/modules -maxdepth 1 -name -type d | while read -r another_bb; do
-        wleowleo="$(echo "$another_bb" | grep -i 'busybox')"
-        if [ -n "$wleowleo" ] && [ -d "$wleowleo" ] && [ -f "$wleowleo/module.prop" ]; then
-            touch "$wleowleo"/remove
-        fi
-    done            
-fi
-
-if [ -d "/data/adb/modules/${MODID}" ] && [ -f "/data/adb/modules/${MODID}/installed" ]; then
-	rm -f /data/adb/modules/${MODID}/installed
-fi
-
-# Extract Binary
-deploy
-
-# Print Busybox Version
-BB_VER="$($a/busybox | head -n1 | cut -f1 -d'(')"
-
-# Install into /system/bin, if exists.
-if [ ! -e /system/xbin ]; then
-	mkdir -p $MODPATH/system/bin
-	mv -f $a/busybox $MODPATH/system/bin/busybox
-	rm -Rf $a
-	
-fi
 
 set_perm_recursive $MODPATH 0 0 0755 0644
 set_perm_recursive $MODPATH/script 0 0 0755 0755
