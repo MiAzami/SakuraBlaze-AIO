@@ -44,9 +44,6 @@ echo "performance" > /sys/devices/system/cpu/cpufreq/policy6/scaling_governor
 echo "performance" > /sys/class/devfreq/mtk-dvfsrc-devfreq/governor
 echo "performance" > /sys/class/devfreq/13000000.mali/governor
 echo "00" > /proc/gpufreqv2/fix_target_opp_index
-echo "1100000 75000" > /proc/gpufreqv2/fix_custom_freq_volt
-echo "on" > /proc/gpufreqv2/mfgsys_power_control
-echo "1" > /proc/gpufreqv2/gpm_mode
 echo "coarse_demand" > /sys/class/misc/mali0/device/power_policy
 
 # CPU SET
@@ -204,7 +201,6 @@ for vm in /proc/sys/vm
         echo 0 > "$vm/compaction_proactiveness"
         echo 1 > "$vm/watermark_boost_factor"
         echo 100 > "$vm/watermark_scale_factor"
-        echo 3 > "$vm/drop_caches"
     done
     for sw in /dev/memcg
     do
