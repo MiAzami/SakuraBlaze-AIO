@@ -75,6 +75,7 @@ ui_print "  Volume Key Selector to select options:"
 ui_print "  1) ZRAM"
 ui_print "  2) GMS Doze"
 ui_print "  3) Install Busybox"
+ui_print "  4) Auto Thermal"
 ui_print ""
 ui_print "  Button Function:"
 ui_print "  • Volume + (Next)"
@@ -221,11 +222,38 @@ esac
 ui_print "    $TEXT3"
 ui_print ""
 
+# GMS doze
+ui_print "  🔥 Auto Thermal..."
+ui_print "    1. Install"
+ui_print "    2. Skip Install"
+ui_print ""
+ui_print "    Select:"
+D=1
+while true; do
+    ui_print "    $D"
+    if $VKSEL; then
+        D=$((D + 1))
+    else
+        break
+    fi
+    if [ $D -gt 2 ]; then
+        D=1
+    fi
+done
+ui_print "    Selected: $D"
+case $D in
+    1 ) TEXT4="Install"; sed -i '/#thermalmode/s/.*/thermalmode/' $MODPATH/script/sakuraai_auto.sh;;
+    2 ) TEXT4="Skip Install";;
+esac
+ui_print "    $TEXT4"
+ui_print ""
+
 sleep 1
 ui_print "  Your settings:"
 ui_print "  1) ZRAM Size : $TEXT1"
 ui_print "  2) GMS Doze  : $TEXT2"
 ui_print "  3) Install Busybox  : $TEXT3"
+ui_print "  4) Auto Thermal  : $TEXT4"
 ui_print " "
 ui_print "  Apply Options"
 ui_print " "
