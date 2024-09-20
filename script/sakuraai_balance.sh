@@ -90,79 +90,52 @@ for dlp in /proc/displowpower
         echo 100 > "$dlp/idletime"
     done
     
-# scheduler
+# # scheduler
 for sch in /proc/sys/kernel
     do
         echo 100000 > "$sch/sched_migration_cost_ns"
-        echo 60 > "$sch/perf_cpu_time_max_percent"
+        echo 40 > "$sch/perf_cpu_time_max_percent"
         echo 1000000 > "$sch/sched_latency_ns"
-        echo 1024 > "$sch/sched_util_clamp_max"
+        echo 1000 > "$sch/sched_util_clamp_max"
         echo 256 > "$sch/sched_util_clamp_min"
-        echo 2 > "$sch/sched_tunable_scaling"
+        echo 1 > "$sch/sched_tunable_scaling"
         echo 1 > "$sch/sched_child_runs_first"
         echo 1 > "$sch/sched_energy_aware"
-        echo 8 > "$sch/sched_nr_migrate"
-        echo 2 > "$sch/sched_pelt_multiplier"
+        echo 70 > "$sch/sched_nr_migrate"
+        echo 1 > "$sch/sched_pelt_multiplier"
         echo 1 > "$sch/sched_util_clamp_min_rt_default"
-        echo 1 > "$sch/sched_deadline_period_max_us"
-        echo 1 > "$sch/sched_deadline_period_min_us"
-        echo 0 > "$sch/sched_schedstats"
-        echo 30000000 > "$sch/sched_wakeup_granularity_ns"
-        echo 10000000 > "$sch/sched_min_granularity_ns"
-    done
-    for sda in /sys/block/sda/queue
-    do
-        echo 0 > "$sda/add_random"
-        echo 0 > "$sda/iostats"
-        echo 2 > "$sda/nomerges"
-        echo 2 > "$sda/rq_affinity"
-        echo 0 > "$sda/rotational"
-        echo 128 > "$sda/nr_requests"
-        echo 2048 > "$sda/read_ahead_kb"
-    done
-    for sdb in /sys/block/sdb/queue
-    do
-        echo 0 > "$sdb/add_random"
-        echo 0 > "$sdb/iostats"
-        echo 2 > "$sdb/nomerges"
-        echo 2 > "$sdb/rq_affinity"
-        echo 0 > "$sdb/rotational"
-        echo 128 > "$sdb/nr_requests"
-        echo 2048 > "$sdb/read_ahead_kb"
-    done
-    for sdc in /sys/block/sdc/queue
-    do
-        echo 0 > "$sdc/add_random"
-        echo 0 > "$sdc/iostats"
-        echo 2 > "$sdc/nomerges"
-        echo 2 > "$sdc/rq_affinity"
-        echo 0 > "$sdc/rotational"
-        echo 128 > "$sdc/nr_requests"
-        echo 2048 > "$sdc/read_ahead_kb"
-    done
-    for dm0 in /sys/block/dm-0/queue
-    do
-        echo 0 > "$dm0/add_random"
-        echo 0 > "$dm0/iostats"
-        echo 2 > "$dm0/nomerges"
-        echo 2 > "$dm0/rq_affinity"
-        echo 0 > "$dm0/rotational"
-        echo 128 > "$dm0/nr_requests"
-        echo 2048 > "$dm0/read_ahead_kb"
+        echo 4194304 > "$sch/sched_deadline_period_max_us"
+        echo 100 > "$sch/sched_deadline_period_min_us"
+        echo 1 > "$sch/sched_schedstats"
+        echo 30000 > "$sch/sched_wakeup_granularity_ns"
+        echo 10000 > "$sch/sched_min_granularity_ns"
     done
     
-    # I/O scheduler
-    for queue in /sys/block/*/queue
-    do
-        echo 2048 > "$queue/read_ahead_kb"
-        echo 128 > "$queue/nr_requests"
-        echo 2 > "$queue/rq_affinity"
-        echo 2 > "$dm0/nomerges"
-        echo 0 > "$queue/add_random"
-        echo 0 > "$queue/iostats"
-        echo 0 > "$dm0/rotational"
-    done
+for device in /sys/block/*
+do
+    # Skip if not a block device
+    if [ ! -d "$device/queue" ]; then
+        continue
+    fi
 
+    queue="$device/queue"
+    
+    # Check if the device is rotational (HDD) or non-rotational (SSD)
+    rotational=$(cat "$queue/rotational")
+
+    echo 0 > "$queue/add_random"
+    echo 0 > "$queue/iostats"
+    echo 2 > "$queue/nomerges"
+    echo 2 > "$queue/rq_affinity"
+    
+    # If the device is SSD (rotational = 0), apply SSD-specific settings
+    if [ "$rotational" -eq 0 ]; then
+        echo 0 > "$queue/rotational"
+    fi
+
+    echo 128 > "$queue/nr_requests"
+    echo 2048 > "$queue/read_ahead_kb"
+done
 # Power Level
 for pl in /sys/devices/system/cpu/perf
     do
