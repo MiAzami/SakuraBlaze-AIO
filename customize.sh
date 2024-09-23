@@ -76,12 +76,18 @@ ui_print "  1) ZRAM"
 ui_print "  2) GMS Doze"
 ui_print "  3) Install Busybox"
 ui_print "  4) Auto Thermal"
+ui_print "  5) Render Settings"
+ui_print "  6) Disable HW Overlays"
+ui_print "  7) Advanced FPSGO"
+ui_print "  8) Advanced GPU Setting"
+ui_print "  9) Advanced GPU Boost"
+ui_print "  10) Spoofing"
 ui_print ""
 ui_print "  Button Function:"
 ui_print "  • Volume + (Next)"
 ui_print "  • Volume - (Select)"
 ui_print ""
-sleep 3
+sleep 2
 
 # Define external variables
 BPATH="$TMPDIR/system/xbin"
@@ -169,9 +175,9 @@ ui_print "    $TEXT1"
 ui_print ""
 
 # GMS doze
-ui_print "  🍃 GMS Doze..."
-ui_print "    1. Enable"
-ui_print "    2. Disable"
+ui_print "  🍃 Install GMS Doze..."
+ui_print "    1. Yes"
+ui_print "    2. No/Skip"
 ui_print ""
 ui_print "    Select:"
 B=1
@@ -188,8 +194,8 @@ while true; do
 done
 ui_print "    Selected: $B"
 case $B in
-    1 ) TEXT2="Enable"; sed -i '/#gms_doze_patch/s/.*/doze_disable/' $MODPATH/post-fs-data.sh;;
-    2 ) TEXT2="Disable"; sed -i '/#gms_doze_enable/s/.*/doze_enable/' $MODPATH/post-fs-data.sh;;
+    1 ) TEXT2="Yes"; sed -i '/#gms_doze_patch/s/.*/doze_disable/' $MODPATH/post-fs-data.sh;;
+    2 ) TEXT2="No";;
 esac
 ui_print "    $TEXT2"
 ui_print ""
@@ -248,12 +254,187 @@ esac
 ui_print "    $TEXT4"
 ui_print ""
 
+# Built-in busybox
+ui_print "  ⚙️ Render Settings.."
+ui_print "    1. SkiaVKThreadedV5"
+ui_print "    2. SkiaGLThreadedV4"
+ui_print "    3. Skip Install"
+ui_print ""
+ui_print "    Select:"
+E=1
+while true; do
+    ui_print "    $E"
+    if $VKSEL; then
+        E=$((E + 1))
+    else
+        break
+    fi
+    if [ $E -gt 3 ]; then
+        E=1
+    fi
+done
+ui_print "    Selected: $E"
+case $E in
+    1 ) TEXT5="SkiaVKThreaded"; sed -i '/#skiavk/s/.*/skiavk/' $MODPATH/service.sh;;
+    2 ) TEXT5="SkiaGLThreaded"; sed -i '/#skiagl/s/.*/skiagl/' $MODPATH/service.sh;;
+    3 ) TEXT5="Skip Install";;
+esac
+ui_print "    $TEXT5"
+ui_print ""
+
+# DISABLE HW OVERLAYS
+ui_print "  ⚙️ Disable HW Overlays..."
+ui_print "    1. Yes"
+ui_print "    2. No"
+ui_print "    CAUTION!! WILL DRAIN YOUR BATTERY"
+ui_print ""
+ui_print "    Select:"
+F=1
+while true; do
+    ui_print "    $F"
+    if $VKSEL; then
+        F=$((F + 1))
+    else
+        break
+    fi
+    if [ $F -gt 2 ]; then
+        F=1
+    fi
+done
+ui_print "    Selected: $F"
+case $F in
+    1 ) TEXT6="Yes"; sed -i '/#doverlay/s/.*/doverlay/' $MODPATH/service.sh;;
+    2 ) TEXT6="No";;
+esac
+ui_print "    $TEXT6"
+ui_print ""
+
+# FPSGO
+ui_print "  ⚡️ Enable Advanced FPSGO Settings..."
+ui_print "    1. Yes"
+ui_print "    2. No / Skip Install"
+ui_print ""
+ui_print "    Select:"
+G=1
+while true; do
+    ui_print "    $G"
+    if $VKSEL; then
+        G=$((G + 1))
+    else
+        break
+    fi
+    if [ $G -gt 2 ]; then
+        G=1
+    fi
+done
+ui_print "    Selected: $G"
+case $G in
+    1 ) TEXT7="Yes"; sed -i '/#fpsgo/s/.*/fpsgo/' $MODPATH/service.sh;;
+    2 ) TEXT7="No";;
+esac
+ui_print "    $TEXT7"
+ui_print ""
+
+# FPSGO
+ui_print "  ⚡️ Enable Advanced GPU Priority Settings..."
+ui_print "    1. Full GPU"
+ui_print "    2. 75% GPU"
+ui_print "    3. 50% GPU"
+ui_print "    4. Full CPU"
+ui_print "    5. Skip"
+ui_print ""
+ui_print "    Select:"
+H=1
+while true; do
+    ui_print "    $H"
+    if $VKSEL; then
+        H=$((H + 1))
+    else
+        break
+    fi
+    if [ $H -gt 5 ]; then
+        H=1
+    fi
+done
+ui_print "    Selected: $H"
+case $H in
+    1 ) TEXT8="Full GPU"; sed -i '/persist.sys.perf.topAppRenderThreadBoost.enable/s/.*/persist.sys.perf.topAppRenderThreadBoost.enable=true/' $MODPATH/system.prop; sed -i '/debug.sf.hw/s/.*/debug.sf.hw=1/' $MODPATH/system.prop; sed -i '/debug.hwui.render_thread/s/.*/debug.hwui.render_thread=true/' $MODPATH/system.prop; sed -i '/debug.skia.threaded_mode/s/.*/debug.skia.threaded_mode=true/' $MODPATH/system.prop; sed -i '/debug.hwui.render_thread_count/s/.*/debug.hwui.render_thread_count=1/' $MODPATH/system.prop; sed -i '/debug.skia.num_render_threads/s/.*/debug.skia.num_render_threads=1/' $MODPATH/system.prop; sed -i 'debug.skia.render_thread_priority/s/.*/debug.skia.render_thread_priority=1/' $MODPATH/system.prop; sed -i 'persist.sys.gpu.working_thread_priority/s/.*/persist.sys.gpu.working_thread_priority=1/' $MODPATH/system.prop; sed -i 'debug.hwui.profile/s/.*/debug.hwui.profile=true/' $MODPATH/system.prop; sed -i 'debug.hwui.show_dirty_regions/s/.*/debug.hwui.show_dirty_regions=false/' $MODPATH/system.prop; sed -i 'debug.hwui.fps_divisor/s/.*/debug.hwui.fps_divisor=1/' $MODPATH/system.prop; sed -i 'debug.hwui.show_non_rect_clip/s/.*/debug.hwui.show_non_rect_clip=false/' $MODPATH/system.prop; sed -i 'debug.hwui.webview_overlays_enabled/s/.*/debug.hwui.webview_overlays_enabled=true/' $MODPATH/system.prop; sed -i 'renderthread.skia.reduceopstasksplitting/s/.*/renderthread.skia.reduceopstasksplitting=true/' $MODPATH/system.prop; sed -i 'debug.hwui.use_hint_manager/s/.*/debug.hwui.use_hint_manager=false/' $MODPATH/system.prop; sed -i 'debug.hwui.target_cpu_time_percent/s/.*/debug.hwui.target_cpu_time_percent=0/' $MODPATH/system.prop; sed -i 'debug.hwui.skia_tracing_enabled/s/.*/debug.hwui.skia_tracing_enabled=false/' $MODPATH/system.prop; sed -i 'debug.hwui.capture_skp_enabled/s/.*/debug.hwui.capture_skp_enabled=false/' $MODPATH/system.prop; sed -i 'debug.hwui.skia_use_perfetto_track_events/s/.*/debug.hwui.skia_use_perfetto_track_events=false/' $MODPATH/system.prop; sed -i 'debug.hwui.trace_gpu_resources/s/.*/debug.hwui.trace_gpu_resources=true/' $MODPATH/system.prop; sed -i 'debug.hwui.show_layers_updates/s/.*/debug.hwui.show_layers_updates=false/' $MODPATH/system.prop; sed -i 'debug.hwui.skip_empty_damage/s/.*/debug.hwui.skip_empty_damage=true/' $MODPATH/system.prop; sed -i 'debug.hwui.use_buffer_age/s/.*/debug.hwui.use_buffer_age=false/' $MODPATH/system.prop; sed -i 'debug.hwui.use_partial_updates/s/.*/debug.hwui.use_partial_updates=false/' $MODPATH/system.prop; sed -i 'debug.hwui.use_gpu_pixel_buffers/s/.*/debug.hwui.use_gpu_pixel_buffers=false/' $MODPATH/system.prop; sed -i 'debug.hwui.filter_test_overhead/s/.*/debug.hwui.filter_test_overhead=false/' $MODPATH/system.prop; sed -i 'debug.hwui.overdraw/s/.*/debug.hwui.overdraw=false/' $MODPATH/system.prop; sed -i 'debug.hwui.level/s/.*/debug.hwui.level=2/' $MODPATH/system.prop;;
+	2 ) TEXT8="75% GPU"; sed -i '/persist.sys.perf.topAppRenderThreadBoost.enable/s/.*/persist.sys.perf.topAppRenderThreadBoost.enable=true/' $MODPATH/system.prop; sed -i '/debug.sf.hw/s/.*/debug.sf.hw=1/' $MODPATH/system.prop; sed -i '/debug.hwui.render_thread/s/.*/debug.hwui.render_thread=true/' $MODPATH/system.prop; sed -i '/debug.skia.threaded_mode/s/.*/debug.skia.threaded_mode=true/' $MODPATH/system.prop; sed -i '/debug.hwui.render_thread_count/s/.*/debug.hwui.render_thread_count=1/' $MODPATH/system.prop; sed -i '/debug.skia.num_render_threads/s/.*/debug.skia.num_render_threads=1/' $MODPATH/system.prop; sed -i 'debug.skia.render_thread_priority/s/.*/debug.skia.render_thread_priority=1/' $MODPATH/system.prop; sed -i 'persist.sys.gpu.working_thread_priority/s/.*/persist.sys.gpu.working_thread_priority=1/' $MODPATH/system.prop; sed -i 'debug.hwui.profile/s/.*/debug.hwui.profile=true/' $MODPATH/system.prop; sed -i 'debug.hwui.show_dirty_regions/s/.*/debug.hwui.show_dirty_regions=false/' $MODPATH/system.prop; sed -i 'debug.hwui.fps_divisor/s/.*/debug.hwui.fps_divisor=1/' $MODPATH/system.prop; sed -i 'debug.hwui.show_non_rect_clip/s/.*/debug.hwui.show_non_rect_clip=false/' $MODPATH/system.prop; sed -i 'debug.hwui.webview_overlays_enabled/s/.*/debug.hwui.webview_overlays_enabled=true/' $MODPATH/system.prop; sed -i 'renderthread.skia.reduceopstasksplitting/s/.*/renderthread.skia.reduceopstasksplitting=true/' $MODPATH/system.prop; sed -i 'debug.hwui.use_hint_manager/s/.*/debug.hwui.use_hint_manager=true/' $MODPATH/system.prop; sed -i 'debug.hwui.target_cpu_time_percent/s/.*/debug.hwui.target_cpu_time_percent=25/' $MODPATH/system.prop; sed -i 'debug.hwui.skia_tracing_enabled/s/.*/debug.hwui.skia_tracing_enabled=false/' $MODPATH/system.prop; sed -i 'debug.hwui.capture_skp_enabled/s/.*/debug.hwui.capture_skp_enabled=false/' $MODPATH/system.prop; sed -i 'debug.hwui.skia_use_perfetto_track_events/s/.*/debug.hwui.skia_use_perfetto_track_events=false/' $MODPATH/system.prop; sed -i 'debug.hwui.trace_gpu_resources/s/.*/debug.hwui.trace_gpu_resources=true/' $MODPATH/system.prop; sed -i 'debug.hwui.show_layers_updates/s/.*/debug.hwui.show_layers_updates=false/' $MODPATH/system.prop; sed -i 'debug.hwui.skip_empty_damage/s/.*/debug.hwui.skip_empty_damage=true/' $MODPATH/system.prop; sed -i 'debug.hwui.use_buffer_age/s/.*/debug.hwui.use_buffer_age=false/' $MODPATH/system.prop; sed -i 'debug.hwui.use_partial_updates/s/.*/debug.hwui.use_partial_updates=false/' $MODPATH/system.prop; sed -i 'debug.hwui.use_gpu_pixel_buffers/s/.*/debug.hwui.use_gpu_pixel_buffers=false/' $MODPATH/system.prop; sed -i 'debug.hwui.filter_test_overhead/s/.*/debug.hwui.filter_test_overhead=false/' $MODPATH/system.prop; sed -i 'debug.hwui.overdraw/s/.*/debug.hwui.overdraw=false/' $MODPATH/system.prop; sed -i 'debug.hwui.level/s/.*/debug.hwui.level=2/' $MODPATH/system.prop;;
+	3 ) TEXT8="50% GPU"; sed -i '/persist.sys.perf.topAppRenderThreadBoost.enable/s/.*/persist.sys.perf.topAppRenderThreadBoost.enable=true/' $MODPATH/system.prop; sed -i '/debug.sf.hw/s/.*/debug.sf.hw=1/' $MODPATH/system.prop; sed -i '/debug.hwui.render_thread/s/.*/debug.hwui.render_thread=true/' $MODPATH/system.prop; sed -i '/debug.skia.threaded_mode/s/.*/debug.skia.threaded_mode=true/' $MODPATH/system.prop; sed -i '/debug.hwui.render_thread_count/s/.*/debug.hwui.render_thread_count=1/' $MODPATH/system.prop; sed -i '/debug.skia.num_render_threads/s/.*/debug.skia.num_render_threads=1/' $MODPATH/system.prop; sed -i 'debug.skia.render_thread_priority/s/.*/debug.skia.render_thread_priority=1/' $MODPATH/system.prop; sed -i 'persist.sys.gpu.working_thread_priority/s/.*/persist.sys.gpu.working_thread_priority=1/' $MODPATH/system.prop; sed -i 'debug.hwui.profile/s/.*/debug.hwui.profile=true/' $MODPATH/system.prop; sed -i 'debug.hwui.show_dirty_regions/s/.*/debug.hwui.show_dirty_regions=false/' $MODPATH/system.prop; sed -i 'debug.hwui.fps_divisor/s/.*/debug.hwui.fps_divisor=1/' $MODPATH/system.prop; sed -i 'debug.hwui.show_non_rect_clip/s/.*/debug.hwui.show_non_rect_clip=false/' $MODPATH/system.prop; sed -i 'debug.hwui.webview_overlays_enabled/s/.*/debug.hwui.webview_overlays_enabled=true/' $MODPATH/system.prop; sed -i 'renderthread.skia.reduceopstasksplitting/s/.*/renderthread.skia.reduceopstasksplitting=true/' $MODPATH/system.prop; sed -i 'debug.hwui.use_hint_manager/s/.*/debug.hwui.use_hint_manager=true/' $MODPATH/system.prop; sed -i 'debug.hwui.target_cpu_time_percent/s/.*/debug.hwui.target_cpu_time_percent=50/' $MODPATH/system.prop; sed -i 'debug.hwui.skia_tracing_enabled/s/.*/debug.hwui.skia_tracing_enabled=false/' $MODPATH/system.prop; sed -i 'debug.hwui.capture_skp_enabled/s/.*/debug.hwui.capture_skp_enabled=false/' $MODPATH/system.prop; sed -i 'debug.hwui.skia_use_perfetto_track_events/s/.*/debug.hwui.skia_use_perfetto_track_events=false/' $MODPATH/system.prop; sed -i 'debug.hwui.trace_gpu_resources/s/.*/debug.hwui.trace_gpu_resources=true/' $MODPATH/system.prop; sed -i 'debug.hwui.show_layers_updates/s/.*/debug.hwui.show_layers_updates=false/' $MODPATH/system.prop; sed -i 'debug.hwui.skip_empty_damage/s/.*/debug.hwui.skip_empty_damage=true/' $MODPATH/system.prop; sed -i 'debug.hwui.use_buffer_age/s/.*/debug.hwui.use_buffer_age=false/' $MODPATH/system.prop; sed -i 'debug.hwui.use_partial_updates/s/.*/debug.hwui.use_partial_updates=false/' $MODPATH/system.prop; sed -i 'debug.hwui.use_gpu_pixel_buffers/s/.*/debug.hwui.use_gpu_pixel_buffers=false/' $MODPATH/system.prop; sed -i 'debug.hwui.filter_test_overhead/s/.*/debug.hwui.filter_test_overhead=false/' $MODPATH/system.prop; sed -i 'debug.hwui.overdraw/s/.*/debug.hwui.overdraw=false/' $MODPATH/system.prop; sed -i 'debug.hwui.level/s/.*/debug.hwui.level=2/' $MODPATH/system.prop;;
+    4 ) TEXT8="Full CPU"; sed -i '/persist.sys.perf.topAppRenderThreadBoost.enable/s/.*/persist.sys.perf.topAppRenderThreadBoost.enable=true/' $MODPATH/system.prop; sed -i '/debug.sf.hw/s/.*/debug.sf.hw=1/' $MODPATH/system.prop; sed -i '/debug.hwui.render_thread/s/.*/debug.hwui.render_thread=true/' $MODPATH/system.prop; sed -i '/debug.skia.threaded_mode/s/.*/debug.skia.threaded_mode=true/' $MODPATH/system.prop; sed -i '/debug.hwui.render_thread_count/s/.*/debug.hwui.render_thread_count=1/' $MODPATH/system.prop; sed -i '/debug.skia.num_render_threads/s/.*/debug.skia.num_render_threads=1/' $MODPATH/system.prop; sed -i 'debug.skia.render_thread_priority/s/.*/debug.skia.render_thread_priority=1/' $MODPATH/system.prop; sed -i 'persist.sys.gpu.working_thread_priority/s/.*/persist.sys.gpu.working_thread_priority=1/' $MODPATH/system.prop; sed -i 'debug.hwui.profile/s/.*/debug.hwui.profile=true/' $MODPATH/system.prop; sed -i 'debug.hwui.show_dirty_regions/s/.*/debug.hwui.show_dirty_regions=false/' $MODPATH/system.prop; sed -i 'debug.hwui.fps_divisor/s/.*/debug.hwui.fps_divisor=1/' $MODPATH/system.prop; sed -i 'debug.hwui.show_non_rect_clip/s/.*/debug.hwui.show_non_rect_clip=false/' $MODPATH/system.prop; sed -i 'debug.hwui.webview_overlays_enabled/s/.*/debug.hwui.webview_overlays_enabled=true/' $MODPATH/system.prop; sed -i 'renderthread.skia.reduceopstasksplitting/s/.*/renderthread.skia.reduceopstasksplitting=true/' $MODPATH/system.prop; sed -i 'debug.hwui.use_hint_manager/s/.*/debug.hwui.use_hint_manager=true/' $MODPATH/system.prop; sed -i 'debug.hwui.target_cpu_time_percent/s/.*/debug.hwui.target_cpu_time_percent=100/' $MODPATH/system.prop; sed -i 'debug.hwui.skia_tracing_enabled/s/.*/debug.hwui.skia_tracing_enabled=false/' $MODPATH/system.prop; sed -i 'debug.hwui.capture_skp_enabled/s/.*/debug.hwui.capture_skp_enabled=false/' $MODPATH/system.prop; sed -i 'debug.hwui.skia_use_perfetto_track_events/s/.*/debug.hwui.skia_use_perfetto_track_events=false/' $MODPATH/system.prop; sed -i 'debug.hwui.trace_gpu_resources/s/.*/debug.hwui.trace_gpu_resources=true/' $MODPATH/system.prop; sed -i 'debug.hwui.show_layers_updates/s/.*/debug.hwui.show_layers_updates=false/' $MODPATH/system.prop; sed -i 'debug.hwui.skip_empty_damage/s/.*/debug.hwui.skip_empty_damage=true/' $MODPATH/system.prop; sed -i 'debug.hwui.use_buffer_age/s/.*/debug.hwui.use_buffer_age=false/' $MODPATH/system.prop; sed -i 'debug.hwui.use_partial_updates/s/.*/debug.hwui.use_partial_updates=false/' $MODPATH/system.prop; sed -i 'debug.hwui.use_gpu_pixel_buffers/s/.*/debug.hwui.use_gpu_pixel_buffers=false/' $MODPATH/system.prop; sed -i 'debug.hwui.filter_test_overhead/s/.*/debug.hwui.filter_test_overhead=false/' $MODPATH/system.prop; sed -i 'debug.hwui.overdraw/s/.*/debug.hwui.overdraw=false/' $MODPATH/system.prop; sed -i 'debug.hwui.level/s/.*/debug.hwui.level=2/' $MODPATH/system.prop;;
+	5 ) TEXT8="Skip";;
+esac
+ui_print "    $TEXT8"
+ui_print ""
+
+# FPSGO
+ui_print "  ⚡️ Enable Advanced GPU Boost Settings..."
+ui_print "    1. Yes"
+ui_print "    2. No / Skip Install"
+ui_print ""
+ui_print "    Select:"
+I=1
+while true; do
+    ui_print "    $I"
+    if $VKSEL; then
+        I=$((I + 1))
+    else
+        break
+    fi
+    if [ $I -gt 2 ]; then
+        I=1
+    fi
+done
+ui_print "    Selected: $I"
+case $I in
+    1 ) TEXT9="Yes"; sed -i '/debug.enabletr/s/.*/debug.enabletr=true/' $MODPATH/system.prop; sed -i '/debug.performance.tuning/s/.*/debug.performance.tuning=1/' $MODPATH/system.prop; sed -i '/hwui.render_dirty_regions/s/.*/hwui.render_dirty_regions=true/' $MODPATH/system.prop; sed -i '/vendor.gralloc.disable_ubwc/s/.*/vendor.gralloc.disable_ubwc=0/' $MODPATH/system.prop; sed -i '/debug.sf.hw/s/.*/debug.sf.hw=1/' $MODPATH/system.prop; sed -i '/persist.service.lgospd.enable/s/.*/persist.service.lgospd.enable=0/' $MODPATH/system.prop; sed -i '/debug.egl.hw/s/.*/debug.egl.hw=1/' $MODPATH/system.prop; sed -i '/debug.egl.profiler/s/.*/debug.egl.profiler=1/' $MODPATH/system.prop; sed -i '/ro.sf.compbypass.enable/s/.*/ro.sf.compbypass.enable=0/' $MODPATH/system.prop; sed -i '/ro.sf.compbypass.count/s/.*/ro.sf.compbypass.count=0/' $MODPATH/system.prop; sed -i '/debug.overlayui.enable/s/.*/debug.overlayui.enable=1' $MODPATH/system.prop; sed -i '/persist.sys.ui.hw/s/.*/persist.sys.ui.hw=1' $MODPATH/system.prop; sed -i '/persist.sys.ui.rendering/s/.*/persist.sys.ui.rendering=1' $MODPATH/system.prop; sed -i '/debug.gralloc.gfx_ubwc_disable/s/.*/debug.gralloc.gfx_ubwc_disable=1' $MODPATH/system.prop; sed -i '/persist.sys.gpu.rendering/s/.*/persist.sys.gpu.rendering=1' $MODPATH/system.prop; sed -i '/video.accelerate.hw/s/.*/video.accelerate.hw=1' $MODPATH/system.prop; sed -i '/debug.hwui.use_buffer_age/s/.*/debug.hwui.use_buffer_age=false' $MODPATH/system.prop; sed -i '/ro.config.enable.hw_accel/s/.*/ro.config.enable.hw_accel=true' $MODPATH/system.prop;;
+    2 ) TEXT9="No";;
+esac
+ui_print "    $TEXT9"
+ui_print ""
+
+# FPSGO
+ui_print "  ⚡️ Spoofing for Gaming..."
+ui_print "    1. Mobile Legends"
+ui_print "    2. PUBG"
+ui_print "    3. CODM"
+ui_print "    4. Skip"
+ui_print ""
+ui_print "    Select:"
+J=1
+while true; do
+    ui_print "    $J"
+    if $VKSEL; then
+        J=$((J + 1))
+    else
+        break
+    fi
+    if [ $J -gt 4 ]; then
+        J=1
+    fi
+done
+ui_print "    Selected: $J"
+case $J in
+    1 ) TEXT10="Mobile Legends"; sed -i '/ro.product.model/s/.*/ro.product.model=Mi 10 Pro/' $MODPATH/system.prop; sed -i '/ro.product.odm.model/s/.*/ro.product.odm.model=Mi 10 Pro/' $MODPATH/system.prop; sed -i '/ro.product.system.model/s/.*/ro.product.system.model=Mi 10 Pro/' $MODPATH/system.prop; sed -i '/ro.product.vendor.model/s/.*/ro.product.vendor.model=Mi 10 Pro/' $MODPATH/system.prop; sed -i '/ro.product.system_ext.model/s/.*/ro.product.system_ext.model=Mi 10 Pro/' $MODPATH/system.prop;;
+    2 ) TEXT10="PUBG"; sed -i '/ro.product.model/s/.*/ro.product.model=M2006J10C/' $MODPATH/system.prop; sed -i '/ro.product.odm.model/s/.*/ro.product.odm.model=M2006J10C/' $MODPATH/system.prop; sed -i '/ro.product.system.model/s/.*/ro.product.system.model=M2006J10C/' $MODPATH/system.prop; sed -i '/ro.product.vendor.model/s/.*/ro.product.vendor.model=M2006J10C/' $MODPATH/system.prop; sed -i '/ro.product.system_ext.model/s/.*/ro.product.system_ext.model=M2006J10C/' $MODPATH/system.prop;;
+	3 ) TEXT10="CODM"; sed -i '/ro.product.model/s/.*/ro.product.model=SM-G965F/' $MODPATH/system.prop; sed -i '/ro.product.odm.model/s/.*/ro.product.odm.model=SM-G965F/' $MODPATH/system.prop; sed -i '/ro.product.system.model/s/.*/ro.product.system.model=SM-G965F/' $MODPATH/system.prop; sed -i '/ro.product.vendor.model/s/.*/ro.product.vendor.model=SM-G965F/' $MODPATH/system.prop; sed -i '/ro.product.system_ext.model/s/.*/ro.product.system_ext.model=SM-G965F/' $MODPATH/system.prop;;
+	4 ) TEXT10="Skip";;
+esac
+ui_print "    $TEXT10"
+ui_print ""
+
 sleep 1
 ui_print "  Your settings:"
-ui_print "  1) ZRAM Size : $TEXT1"
-ui_print "  2) GMS Doze  : $TEXT2"
-ui_print "  3) Install Busybox  : $TEXT3"
-ui_print "  4) Auto Thermal  : $TEXT4"
+ui_print "  1) ZRAM Size			  : $TEXT1"
+ui_print "  2) GMS Doze 			  : $TEXT2"
+ui_print "  3) Install Busybox 		  : $TEXT3"
+ui_print "  4) Auto Thermal 		  : $TEXT4"
+ui_print "  5) Render Settings        : $TEXT5"
+ui_print "  6) Disable HW Overlays    : $TEXT6"
+ui_print "  7) Advanced FPSGO         : $TEXT7"
+ui_print "  8) Advanced GPU Settings  : $TEXT8"
+ui_print "  9) Advanced GPU Boost 	  : $TEXT9"
+ui_print "  10) Spoofing			  : $TEXT10"
 ui_print " "
 ui_print "  Apply Options"
 ui_print " "

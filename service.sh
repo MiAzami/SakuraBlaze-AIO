@@ -42,6 +42,76 @@ change_zram()
     swapon /dev/block/zram0
 }
 
+# skiavk
+skiavk()
+{
+    resetprop -n debug.hwui.renderer skiavk
+    resetprop -n debug.renderengine.backend skiavkthreaded
+    resetprop -n ro.hwui.use_vulkan 1
+    resetprop -n ro.hwui.hardware.vulkan true
+    resetprop -n ro.hwui.use_vulkan true
+    resetprop -n ro.hwui.skia.show_vulkan_pipeline true
+    resetprop -n persist.sys.disable_skia_path_ops false
+    resetprop -n ro.config.hw_high_perf true
+    resetprop -n debug.hwui.disable_scissor_opt true
+    resetprop -n debug.vulkan.layers.enable 1
+    resetprop -n debug.hwui.render_thread true
+}
+
+# skiagl
+skiagl()
+{
+    resetprop -n debug.hwui.renderer skiagl
+    resetprop -n vendor.debug.renderengine.backend skiaglthreaded
+    resetprop -n debug.renderengine.backend skiaglthreaded
+    resetprop -n debug.hwui.render_thread true
+    resetprop -n debug.skia.threaded_mode true
+    resetprop -n debug.hwui.render_thread_count 1
+    resetprop -n debug.skia.num_render_threads 1
+    resetprop -n debug.skia.render_thread_priority 1
+    resetprop -n persist.sys.gpu.working_thread_priority 1
+}
+
+# disable overlay HW
+doverlay()
+{
+    service call SurfaceFlinger 1008 i32 1
+}
+
+# enable overlay HW
+eoverlay()
+{
+    service call SurfaceFlinger 1008 i32 0
+}
+
+# Advanced FPSGO Settings
+fpsgo()
+{
+    echo "15" > /sys/module/mtk_fpsgo/parameters/bhr_opp
+    echo "1" > /sys/module/mtk_fpsgo/parameters/bhr_opp_l
+    echo "1" > /sys/module/mtk_fpsgo/parameters/boost_affinity
+    echo "1" > /sys/module/mtk_fpsgo/parameters/xgf_uboost
+    echo "90" > /sys/module/mtk_fpsgo/parameters/uboost_enhance_f
+    echo "1" > /sys/module/mtk_fpsgo/parameters/gcc_fps_margin
+    echo "90" > /sys/module/mtk_fpsgo/parameters/rescue_enhance_f
+    echo "1" > /sys/module/mtk_fpsgo/parameters/qr_mod_frame
+    echo "1" > /sys/module/mtk_fpsgo/parameters/fstb_separate_runtime_enable
+    echo "1" > /sys/module/mtk_fpsgo/parameters/fstb_consider_deq
+    echo "5" > /sys/pnpmgr/fpsgo_boost/fstb/fstb_tune_quantile
+    echo "0" > /sys/pnpmgr/fpsgo_boost/fstb/fstb_tune_error_threshold
+    echo "1" > /sys/pnpmgr/fpsgo_boost/fstb/margin_mode
+    echo "15" > /sys/pnpmgr/fpsgo_boost/fbt/bhr_opp
+    echo "1" > /sys/pnpmgr/fpsgo_boost/fbt/adjust_loading
+    echo "1" > /sys/pnpmgr/fpsgo_boost/fbt/dyn_tgt_time_en
+    echo "0" > /sys/pnpmgr/fpsgo_boost/fbt/floor_opp
+    echo "90" > /sys/pnpmgr/fpsgo_boost/fbt/rescue_enhance_f
+    echo "90" > /sys/pnpmgr/fpsgo_boost/fbt/rescue_opp_c
+    echo "90" > /sys/pnpmgr/fpsgo_boost/fbt/rescue_opp_f
+    echo "90" > /sys/pnpmgr/fpsgo_boost/fbt/rescue_percent
+    echo "1" > /sys/pnpmgr/fpsgo_boost/fbt/ultra_rescue
+}
+
+
 # Enable all tweak
 sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=[ 🍃 Planting sakura seeds ] /g' "$MODDIR/module.prop"
 su -lp 2000 -c "cmd notification post -S bigtext -t 'SakuraAI' tag '🍃 Planting sakura seeds'" >/dev/null 2>&1
@@ -66,7 +136,6 @@ for fbt in /sys/kernel/fpsgo/fstb
 for gedh in /sys/kernel/ged/hal
     do
         echo 95 > "$gedh/gpu_boost_level"
-        echo 8 > "$gedh/loading_base_dvfs_step"
     done
 
 # GED Parameter (Module) 
@@ -77,7 +146,6 @@ for gedp in /sys/module/ged/parameters
         echo 1 > "$gedp/ged_boost_enable"
         echo 1 > "$gedp/boost_gpu_enable"
         echo 1 > "$gedp/gpu_dvfs_enable"
-        echo 95 > "$gedp/gx_fb_dvfs_margin"
         echo 100 > "$gedp/gpu_idle"
         echo 0 > "$gedp/is_GED_KPI_enabled"
 	done
@@ -89,7 +157,6 @@ for pnp in /sys/pnpmgr
         echo 1 > "$pnp/install"
         echo 1 > "$pnp/mwn"
         echo 100 > "$pnp/fpsgo_boost/fstb/fstb_tune_quantile"
-        echo 120 > "$pnp/fpsgo_boost/fstb/fstb_fix_fps"
     done
     
 # MTKFPS GO Parameter
@@ -121,6 +188,7 @@ echo "1" > /proc/sys/net/ipv4/tcp_low_latency
 echo "1" > /proc/sys/net/ipv4/tcp_ecn
 echo "1" > /proc/sys/net/ipv4/tcp_sack
 echo "1" > /proc/sys/net/ipv4/tcp_timestamps
+echo "3" > /proc/sys/net/ipv4/tcp_fastopenecho "3" > /proc/sys/net/ipv4/tcp_fastopen
 
 # Done
 sleep 1

@@ -39,8 +39,8 @@ chmod 644 /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
 echo "schedutil" > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
 chmod 644 /sys/devices/system/cpu/cpufreq/policy6/scaling_governor
 echo "schedutil" > /sys/devices/system/cpu/cpufreq/policy6/scaling_governor
-echo "1000" > /sys/devices/system/cpu/cpufreq/policy6/schedutil/rate_limit_us
-echo "1000" > /sys/devices/system/cpu/cpufreq/policy0/schedutil/rate_limit_us
+echo "5000" > /sys/devices/system/cpu/cpufreq/policy6/schedutil/rate_limit_us
+echo "5000" > /sys/devices/system/cpu/cpufreq/policy0/schedutil/rate_limit_us
 
 # GPU Configure
 echo "-1" > /proc/gpufreqv2/fix_target_opp_index
@@ -93,22 +93,20 @@ for dlp in /proc/displowpower
 # # scheduler
 for sch in /proc/sys/kernel
     do
-        echo 100000 > "$sch/sched_migration_cost_ns"
-        echo 40 > "$sch/perf_cpu_time_max_percent"
-        echo 1000000 > "$sch/sched_latency_ns"
+        echo 1000000 > "$sch/sched_migration_cost_ns"
+        echo 45 > "$sch/perf_cpu_time_max_percent"
+        echo 10000000 > "$sch/sched_latency_ns"
         echo 1000 > "$sch/sched_util_clamp_max"
-        echo 256 > "$sch/sched_util_clamp_min"
+        echo 100 > "$sch/sched_util_clamp_min"
         echo 1 > "$sch/sched_tunable_scaling"
         echo 1 > "$sch/sched_child_runs_first"
         echo 1 > "$sch/sched_energy_aware"
-        echo 70 > "$sch/sched_nr_migrate"
-        echo 1 > "$sch/sched_pelt_multiplier"
-        echo 1 > "$sch/sched_util_clamp_min_rt_default"
+        echo 100000 > "$sch/sched_util_clamp_min_rt_default"
         echo 4194304 > "$sch/sched_deadline_period_max_us"
         echo 100 > "$sch/sched_deadline_period_min_us"
-        echo 1 > "$sch/sched_schedstats"
-        echo 30000 > "$sch/sched_wakeup_granularity_ns"
-        echo 10000 > "$sch/sched_min_granularity_ns"
+        echo 0 > "$sch/sched_schedstats"
+        echo 3000000 > "$sch/sched_wakeup_granularity_ns"
+        echo 30000000 > "$sch/sched_min_granularity_ns"
     done
     
 for device in /sys/block/*
@@ -150,35 +148,34 @@ echo "on" > /sys/devices/system/cpu/power/control
 # VirtualMemory
 for vm in /proc/sys/vm
     do
-        echo 25 > "$vm/dirty_background_ratio"
+        echo 35 > "$vm/dirty_background_ratio"
         echo 30 > "$vm/dirty_ratio"
-        echo 80 > "$vm/vfs_cache_pressure"
-        echo 300 > "$vm/dirty_expire_centisecs"
-        echo 500 > "$vm/dirty_writeback_centisecs"
+        echo 100 > "$vm/vfs_cache_pressure"
+        echo 400 > "$vm/dirty_expire_centisecs"
+        echo 6000 > "$vm/dirty_writeback_centisecs"
         echo 0 > "$vm/oom_dump_tasks"
         echo 0 > "$vm/page-cluster"
         echo 0 > "$vm/block_dump"
         echo 10 > "$vm/stat_interval"
         echo 1 > "$vm/compaction_proactiveness"
         echo 1 > "$vm/watermark_boost_factor"
-        echo 20 > "$vm/watermark_scale_factor"
+        echo 50 > "$vm/watermark_scale_factor"
+        echo 2 > "$vm/drop_caches"
     done
     for sw in /dev/memcg
     do
-        echo 70 > "$sw/memory.swappiness"
-        echo 35 > "$sw/apps/memory.swappiness"
-        echo 35 > "$sw/system/memory.swappiness"
+        echo 50 > "$sw/memory.swappiness"
     done
 # CPU SET
 for cs in /dev/cpuset
     do
-        echo 0-6 > "$cs/cpus"
+        echo 0-7 > "$cs/cpus"
         echo 0-5 > "$cs/background/cpus"
         echo 0-4 > "$cs/system-background/cpus"
-        echo 0-6 > "$cs/foreground/cpus"
-        echo 0-6 > "$cs/top-app/cpus"
-        echo 0-3 > "$cs/restricted/cpus"
-        echo 0-6 > "$cs/camera-daemon/cpus"
+        echo 0-7 > "$cs/foreground/cpus"
+        echo 0-7 > "$cs/top-app/cpus"
+        echo 0-5 > "$cs/restricted/cpus"
+        echo 0-7 > "$cs/camera-daemon/cpus"
         echo 0 > "$cs/memory_pressure_enabled"
         echo 0 > "$cs/sched_load_balance"
         echo 0 > "$cs/foreground/sched_load_balance"

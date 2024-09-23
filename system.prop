@@ -14,8 +14,6 @@ persist.sys.use_gpu_fps_counter=1
 debug.performance.tuning=1
 
 #Additional
-persist.cpu.freq.boost=1
-debug.hwui.level=2
 PERF_RES_NET_BT_AUDIO_LOW_LATENCY=1
 PERF_RES_NET_WIFI_LOW_LATENCY=1
 PERF_RES_NET_MD_WEAK_SIG_OPT=1
@@ -49,8 +47,8 @@ persist.sys.use_16bpp_alpha=1
 
 # Dalvik
 dalvik.vm.heapstartsize=16m
-dalvik.vm.heapgrowthlimit=256m
-dalvik.vm.heapsize=512m
+dalvik.vm.heapgrowthlimit=128m
+dalvik.vm.heapsize=256m
 dalvik.vm.heaptargetutilization=0.50
 dalvik.vm.heapminfree=512k
 dalvik.vm.heapmaxfree=8m
@@ -66,8 +64,70 @@ debug.sf.latch_unsignaled=1
 debug.sf.disable_backpressure=1
 debug.sf.enable_gl_backpressure=0
 debug.sf.enable_hwc_vds=1
-debug.sf.hw=1
-debug.sf.enable_layer_caching=0
+
+# Set GPU Turbo Boost configurations
+debug.enabletr
+debug.performance.tuning
+hwui.render_dirty_regions
+vendor.gralloc.disable_ubwc
+debug.sf.hw
+persist.service.lgospd.enable
+debug.egl.hw
+debug.egl.profiler
+
+# Rendering Compotitions GPU
+ro.sf.compbypass.enable
+ro.sf.compbypass.count
+
+# UI Rendering
+debug.overlayui.enable
+persist.sys.ui.hw
+persist.sys.ui.rendering
+
+# GPU Booster
+debug.gralloc.gfx_ubwc_disable
+persist.sys.gpu.rendering
+video.accelerate.hw
+
+# HWUI Compotitions
+debug.hwui.use_buffer_age
+ro.config.enable.hw_accel
+
+# Surfaceflinger
+persist.sys.perf.topAppRenderThreadBoost.enable
+debug.sf.hw
+debug.hwui.render_thread
+debug.skia.threaded_mode
+debug.hwui.render_thread_count
+debug.skia.num_render_threads
+debug.skia.render_thread_priority
+persist.sys.gpu.working_thread_priority
+debug.hwui.profile
+debug.hwui.show_dirty_regions
+debug.hwui.fps_divisor
+debug.hwui.show_non_rect_clip
+debug.hwui.webview_overlays_enabled
+renderthread.skia.reduceopstasksplitting
+debug.hwui.use_hint_manager
+debug.hwui.target_cpu_time_percent
+debug.hwui.skia_tracing_enabled
+debug.hwui.skia_use_perfetto_track_events
+debug.hwui.capture_skp_enabled
+debug.hwui.trace_gpu_resources
+debug.hwui.show_layers_updates
+debug.hwui.skip_empty_damage
+debug.hwui.use_buffer_age
+debug.hwui.use_partial_updates
+debug.hwui.use_gpu_pixel_buffers
+debug.hwui.filter_test_overhead
+debug.hwui.overdraw
+debug.hwui.level
+
+ro.product.model
+ro.product.odm.model
+ro.product.system.model
+ro.product.vendor.model
+ro.product.system_ext.model
 
 ############################################
 

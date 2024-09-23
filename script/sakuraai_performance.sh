@@ -18,8 +18,6 @@ read_file(){
 BASEDIR=/data/adb/modules/SakuraAi
 LOG=/storage/emulated/0/SakuraAi/Performance.log
 
-service call SurfaceFlinger 1008 i32 1
-
 # CPU SET
 for cpus in /sys/devices/system/cpu
     do
@@ -88,7 +86,7 @@ for cs in /dev/cpuset
         echo 0-3 > "$cs/system-background/cpus"
         echo 0-7 > "$cs/foreground/cpus"
         echo 0-7 > "$cs/top-app/cpus"
-        echo 0-3 > "$cs/restricted/cpus"
+        echo 0-5 > "$cs/restricted/cpus"
         echo 0-7 > "$cs/camera-daemon/cpus"
         echo 0 > "$cs/memory_pressure_enabled"
         echo 0 > "$cs/sched_load_balance"
@@ -106,75 +104,47 @@ for dlp in /proc/displowpower
 # scheduler
 for sch in /proc/sys/kernel
 do
-    echo 100000 > "$sch/sched_migration_cost_ns"
-    echo 5 > "$sch/perf_cpu_time_max_percent"
-    echo 200000 > "$sch/sched_latency_ns"
-    echo 1024 > "$sch/sched_util_clamp_max"
-    echo 512 > "$sch/sched_util_clamp_min"
+    echo 500000 > "$sch/sched_migration_cost_ns"
+    echo 10 > "$sch/perf_cpu_time_max_percent"
+    echo 10000000 > "$sch/sched_latency_ns"
+    echo 1000 > "$sch/sched_util_clamp_max"
+    echo 725 > "$sch/sched_util_clamp_min"
     echo 2 > "$sch/sched_tunable_scaling"
     echo 1 > "$sch/sched_child_runs_first"
     echo 0 > "$sch/sched_energy_aware"
-    echo 8 > "$sch/sched_nr_migrate"
-    echo 2 > "$sch/sched_pelt_multiplier"
-    echo 25 > "$sch/sched_util_clamp_min_rt_default"
-    echo 200 > "$sch/sched_deadline_period_max_us"
+    echo 250000 > "$sch/sched_util_clamp_min_rt_default"
+    echo 2000000 > "$sch/sched_deadline_period_max_us"
     echo 100 > "$sch/sched_deadline_period_min_us"
     echo 0 > "$sch/sched_schedstats"
     echo 3000000 > "$sch/sched_wakeup_granularity_ns"
     echo 1000000 > "$sch/sched_min_granularity_ns"
 done
 
-    for sda in /sys/block/sda/queue
-    do
-        echo 0 > "$sda/add_random"
-        echo 0 > "$sda/iostats"
-        echo 2 > "$sda/nomerges"
-        echo 2 > "$sda/rq_affinity"
-        echo 0 > "$sda/rotational"
-        echo 256 > "$sda/nr_requests"
-        echo 4096 > "$sda/read_ahead_kb"
-    done
-    for sdb in /sys/block/sdb/queue
-    do
-        echo 0 > "$sdb/add_random"
-        echo 0 > "$sdb/iostats"
-        echo 2 > "$sdb/nomerges"
-        echo 2 > "$sdb/rq_affinity"
-        echo 0 > "$sdb/rotational"
-        echo 256 > "$sdb/nr_requests"
-        echo 4096 > "$sdb/read_ahead_kb"
-    done
-    for sdc in /sys/block/sdc/queue
-    do
-        echo 0 > "$sdc/add_random"
-        echo 0 > "$sdc/iostats"
-        echo 2 > "$sdc/nomerges"
-        echo 2 > "$sdc/rq_affinity"
-        echo 0 > "$sdc/rotational"
-        echo 256 > "$sdc/nr_requests"
-        echo 4096 > "$sdc/read_ahead_kb"
-    done
-    for dm0 in /sys/block/dm-0/queue
-    do
-        echo 0 > "$dm0/add_random"
-        echo 0 > "$dm0/iostats"
-        echo 2 > "$dm0/nomerges"
-        echo 2 > "$dm0/rq_affinity"
-        echo 0 > "$dm0/rotational"
-        echo 256 > "$dm0/nr_requests"
-        echo 4096 > "$dm0/read_ahead_kb"
-    done
-        # I/O scheduler
-    for queue in /sys/block/*/queue
-    do
-        echo 4096 > "$queue/read_ahead_kb"
-        echo 256 > "$queue/nr_requests"
-        echo 2 > "$queue/rq_affinity"
-        echo 2 > "$dm0/nomerges"
-        echo 0 > "$queue/add_random"
-        echo 0 > "$queue/iostats"
-        echo 0 > "$dm0/rotational"
-    done
+for device in /sys/block/*
+do
+    # Skip if not a block device
+    if [ ! -d "$device/queue" ]; then
+        continue
+    fi
+
+    queue="$device/queue"
+    
+    # Check if the device is rotational (HDD) or non-rotational (SSD)
+    rotational=$(cat "$queue/rotational")
+
+    echo 0 > "$queue/add_random"
+    echo 0 > "$queue/iostats"
+    echo 2 > "$queue/nomerges"
+    echo 2 > "$queue/rq_affinity"
+    
+    # If the device is SSD (rotational = 0), apply SSD-specific settings
+    if [ "$rotational" -eq 0 ]; then
+        echo 0 > "$queue/rotational"
+    fi
+
+    echo 128 > "$queue/nr_requests"
+    echo 2048 > "$queue/read_ahead_kb"
+done
 
 # Power Level
 for pl in /sys/devices/system/cpu/perf
@@ -191,7 +161,7 @@ for vm in /proc/sys/vm
     do
         echo 10 > "$vm/dirty_background_ratio"
         echo 15 > "$vm/dirty_ratio"
-        echo 100 > "$vm/vfs_cache_pressure"
+        echo 150 > "$vm/vfs_cache_pressure"
         echo 3000 > "$vm/dirty_expire_centisecs"
         echo 5000 > "$vm/dirty_writeback_centisecs"
         echo 0 > "$vm/oom_dump_tasks"
@@ -200,13 +170,12 @@ for vm in /proc/sys/vm
         echo 10 > "$vm/stat_interval"
         echo 0 > "$vm/compaction_proactiveness"
         echo 1 > "$vm/watermark_boost_factor"
-        echo 100 > "$vm/watermark_scale_factor"
+        echo 30 > "$vm/watermark_scale_factor"
+        echo 2 > "$vm/drop_caches"
     done
     for sw in /dev/memcg
     do
         echo 30 > "$sw/memory.swappiness"
-        echo 30 > "$sw/apps/memory.swappiness"
-        echo 55 > "$sw/system/memory.swappiness"
     done
 
 
