@@ -3,7 +3,11 @@ https://t.me/mtkvestg99
 
 # v1755x
 
-- Optimized Scheduler
-- Optimizied Virtual Memory
-- Deleted Some Funtion
-- Added Selector Busybox & Auto Thermal
+Added Options installer
+- Render Settings (SkiaVK/SkiaGL)
+- Advanced Settings FPSGO
+- Advanced Settings GPU
+- Advanced Settings Render
+- Spoofing ML / PUBG / CODM
+  
+Fix Some Codes
