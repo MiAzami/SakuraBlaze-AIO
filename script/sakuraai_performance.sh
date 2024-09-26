@@ -18,18 +18,9 @@ read_file(){
 BASEDIR=/data/adb/modules/SakuraAi
 LOG=/storage/emulated/0/SakuraAi/Performance.log
 
-# CPU SET
-for cpus in /sys/devices/system/cpu
-    do
-        echo 1 > "$cpus/cpu0/online"
-        echo 1 > "$cpus/cpu1/online"
-        echo 1 > "$cpus/cpu2/online"
-        echo 1 > "$cpus/cpu3/online"
-        echo 1 > "$cpus/cpu4/online"
-        echo 1 > "$cpus/cpu5/online"
-        echo 1 > "$cpus/cpu6/online"
-        echo 1 > "$cpus/cpu7/online"
-    done
+for cpu in /sys/devices/system/cpu/cpu[0-7]; do
+    echo 1 > "$cpu/online"
+done
     
 for policy in /sys/devices/system/cpu/cpufreq/policy*; do
     chmod 644 "$policy/scaling_governor"
@@ -53,27 +44,14 @@ fi
 echo "coarse_demand" > /sys/class/misc/mali0/device/power_policy
 echo 0 > /proc/ppm/enabled
 
-# CPU SET
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_min_freq
-for maf0 in /sys/devices/system/cpu
-    do
-        echo 20000000 > "$maf0/cpu0/cpufreq/scaling_max_freq"
-        echo 20000000 > "$maf0/cpu1/cpufreq/scaling_max_freq"
-        echo 20000000 > "$maf0/cpu2/cpufreq/scaling_max_freq"
-        echo 20000000 > "$maf0/cpu3/cpufreq/scaling_max_freq"
-        echo 20000000 > "$maf0/cpu4/cpufreq/scaling_max_freq"
-        echo 20000000 > "$maf0/cpu5/cpufreq/scaling_max_freq"
-    done
-    for mif0 in /sys/devices/system/cpu
-    do
-        echo 20000000 > "$mif0/cpu0/cpufreq/scaling_min_freq"
-        echo 20000000 > "$mif0/cpu1/cpufreq/scaling_min_freq"
-        echo 20000000 > "$mif0/cpu2/cpufreq/scaling_min_freq"
-        echo 20000000 > "$mif0/cpu3/cpufreq/scaling_min_freq"
-        echo 20000000 > "$mif0/cpu4/cpufreq/scaling_min_freq"
-        echo 20000000 > "$mif0/cpu5/cpufreq/scaling_min_freq"
-    done
+for cpu in /sys/devices/system/cpu/cpu[0-3]; do
+    echo 20000000 > "$cpu/cpufreq/scaling_max_freq"
+done
+for cpu in /sys/devices/system/cpu/cpu[0-3]; do
+    echo 20000000 > "$cpu/cpufreq/scaling_min_freq"
+done
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_min_freq
 
@@ -107,7 +85,7 @@ do
     echo 10 > "$sch/perf_cpu_time_max_percent"
     echo 10000000 > "$sch/sched_latency_ns"
     echo 1000 > "$sch/sched_util_clamp_max"
-    echo 725 > "$sch/sched_util_clamp_min"
+    echo 512 > "$sch/sched_util_clamp_min"
     echo 2 > "$sch/sched_tunable_scaling"
     echo 1 > "$sch/sched_child_runs_first"
     echo 0 > "$sch/sched_energy_aware"
@@ -121,26 +99,19 @@ done
 
 for device in /sys/block/*
 do
-    # Skip if not a block device
     if [ ! -d "$device/queue" ]; then
         continue
     fi
-
     queue="$device/queue"
-    
-    # Check if the device is rotational (HDD) or non-rotational (SSD)
     rotational=$(cat "$queue/rotational")
 
     echo 0 > "$queue/add_random"
     echo 0 > "$queue/iostats"
     echo 2 > "$queue/nomerges"
     echo 2 > "$queue/rq_affinity"
-    
-    # If the device is SSD (rotational = 0), apply SSD-specific settings
     if [ "$rotational" -eq 0 ]; then
         echo 0 > "$queue/rotational"
     fi
-
     echo 128 > "$queue/nr_requests"
     echo 2048 > "$queue/read_ahead_kb"
 done
@@ -176,35 +147,6 @@ for vm in /proc/sys/vm
     do
         echo 30 > "$sw/memory.swappiness"
     done
-
-
-# force stop
-am force-stop com.instagram.android
-am force-stop com.android.vending
-am force-stop app.grapheneos.camera
-am force-stop com.google.android.gm
-am force-stop com.google.android.apps.youtube.creator
-am force-stop com.dolby.ds1appUI
-am force-stop com.google.android.youtube
-am force-stop com.twitter.android
-am force-stop nekox.messenger
-am force-stop com.shopee.id
-am force-stop com.vanced.android.youtube
-am force-stop com.speedsoftware.rootexplorer
-am force-stop com.bukalapak.android
-am force-stop org.telegram.messenger
-am force-stop ru.zdevs.zarchiver
-am force-stop com.android.chrome
-am force-stop com.google.android.GoogleCameraEng
-am force-stop com.facebook.orca
-am force-stop com.lazada.android
-am force-stop com.android.camera
-am force-stop com.android.settings
-am force-stop com.franco.kernel
-am force-stop com.telkomsel.telkomselcm
-am force-stop com.facebook.katana
-am force-stop com.instagram.android
-am force-stop com.facebook.lite
 am kill-all
 
 # Set perf
