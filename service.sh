@@ -99,7 +99,7 @@ fpsgo()
     echo "1" > /sys/module/mtk_fpsgo/parameters/fstb_consider_deq
     echo "5" > /sys/pnpmgr/fpsgo_boost/fstb/fstb_tune_quantile
     echo "0" > /sys/pnpmgr/fpsgo_boost/fstb/fstb_tune_error_threshold
-    echo "1" > /sys/pnpmgr/fpsgo_boost/fstb/margin_mode
+    echo "0" > /sys/pnpmgr/fpsgo_boost/fstb/margin_mode
     echo "15" > /sys/pnpmgr/fpsgo_boost/fbt/bhr_opp
     echo "1" > /sys/pnpmgr/fpsgo_boost/fbt/adjust_loading
     echo "1" > /sys/pnpmgr/fpsgo_boost/fbt/dyn_tgt_time_en
@@ -126,7 +126,7 @@ sync
 chmod 644 /sys/kernel/fpsgo/fstb/*
 for fbt in /sys/kernel/fpsgo/fstb
     do
-        echo 95 > "$fbt/boost_ta"
+        echo 1 > "$fbt/boost_ta"
         echo 0 > "$fbt/enable_switch_sync_flag"
     done
     chmod 444 /sys/kernel/fpsgo/fstb/*
@@ -135,13 +135,13 @@ for fbt in /sys/kernel/fpsgo/fstb
 # GED Hal ( Kernel) 
 for gedh in /sys/kernel/ged/hal
     do
-        echo 95 > "$gedh/gpu_boost_level"
+        echo 101 > "$gedh/gpu_boost_level"
     done
 
 # GED Parameter (Module) 
 for gedp in /sys/module/ged/parameters
     do
-        echo 120 > "$gedp/ged_smart_boost"
+        echo 1 > "$gedp/ged_smart_boost"
         echo 1 > "$gedp/enable_gpu_boost"
         echo 1 > "$gedp/ged_boost_enable"
         echo 1 > "$gedp/boost_gpu_enable"
@@ -163,8 +163,8 @@ for pnp in /sys/pnpmgr
 for fpsp in /sys/module/mtk_fpsgo/parameters
     do
         echo 120 > "$fpsp/boost_affinity"
-        echo 120 > "$fpsp/boost_LR"
-        echo 120 > "$fpsp/xgf_uboost"
+        echo 1 > "$fpsp/boost_LR"
+        echo 1 > "$fpsp/xgf_uboost"
     done
     
 echo "1" > /sys/module/mtk_core_ctl/parameters/policy_enable
@@ -188,7 +188,7 @@ echo "1" > /proc/sys/net/ipv4/tcp_low_latency
 echo "1" > /proc/sys/net/ipv4/tcp_ecn
 echo "1" > /proc/sys/net/ipv4/tcp_sack
 echo "1" > /proc/sys/net/ipv4/tcp_timestamps
-echo "3" > /proc/sys/net/ipv4/tcp_fastopenecho "3" > /proc/sys/net/ipv4/tcp_fastopen
+echo "3" > /proc/sys/net/ipv4/tcp_fastopen
 
 # Done
 sleep 1
