@@ -113,7 +113,7 @@ do
         echo 0 > "$queue/rotational"
     fi
     echo 128 > "$queue/nr_requests"
-    echo 2048 > "$queue/read_ahead_kb"
+    echo 4096 > "$queue/read_ahead_kb"
 done
 
 # Power Level
