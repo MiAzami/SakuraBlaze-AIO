@@ -190,6 +190,11 @@ echo "1" > /proc/sys/net/ipv4/tcp_sack
 echo "1" > /proc/sys/net/ipv4/tcp_timestamps
 echo "3" > /proc/sys/net/ipv4/tcp_fastopen
 
+#GPU SCHED
+echo 1 > /sys/devices/platform/soc/13000000.mali/js_ctx_scheduling_mode
+echo 75 > /sys/devices/platform/soc/13000000.mali/js_scheduling_period
+echo 100 > /sys/devices/platform/soc/13000000.mali/dvfs_period
+
 # Done
 sleep 1
 sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=[ 🌦 Sakura will grow ] /g' "$MODDIR/module.prop"
