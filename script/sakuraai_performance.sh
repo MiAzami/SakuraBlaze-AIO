@@ -31,18 +31,27 @@ for cpus in /sys/devices/system/cpu
         echo 1 > "$cpus/cpu7/online"
     done
     
-#  Governor CPU0
-chmod 644 /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
-echo "performance" > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
-#  Governor CPU6
-chmod 644 /sys/devices/system/cpu/cpufreq/policy6/scaling_governor
-echo "performance" > /sys/devices/system/cpu/cpufreq/policy6/scaling_governor
+for policy in /sys/devices/system/cpu/cpufreq/policy*; do
+    chmod 644 "$policy/scaling_governor"
+    echo "performance" > "$policy/scaling_governor"
+done
 
-# GPU Governor
-echo "performance" > /sys/class/devfreq/mtk-dvfsrc-devfreq/governor
-echo "performance" > /sys/class/devfreq/13000000.mali/governor
-echo "00" > /proc/gpufreqv2/fix_target_opp_index
+for device in /sys/class/devfreq/*; do
+    if [ -f "$device/governor" ]; then
+        chmod 644 "$device/governor"
+        echo "performance" > "$device/governor"
+    fi
+done
+
+if [ -d /proc/gpufreq ]; then
+	gpu_freq="$(cat /proc/gpufreq/gpufreq_opp_dump | grep -o 'freq = [0-9]*' | sed 's/freq = //' | sort -nr | head -n 1)"
+	apply "$gpu_freq" /proc/gpufreq/gpufreq_opp_freq
+elif [ -d /proc/gpufreqv2 ]; then
+	apply 0 /proc/gpufreqv2/fix_target_opp_index
+fi
+
 echo "coarse_demand" > /sys/class/misc/mali0/device/power_policy
+echo 0 > /proc/ppm/enabled
 
 # CPU SET
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
@@ -64,16 +73,6 @@ for maf0 in /sys/devices/system/cpu
         echo 20000000 > "$mif0/cpu3/cpufreq/scaling_min_freq"
         echo 20000000 > "$mif0/cpu4/cpufreq/scaling_min_freq"
         echo 20000000 > "$mif0/cpu5/cpufreq/scaling_min_freq"
-    done
-    for maf6 in /sys/devices/system/cpu
-    do
-        echo 22000000 > "$maf6/cpu6/cpufreq/scaling_max_freq"
-        echo 22000000 > "$maf6/cpu7/cpufreq/scaling_max_freq"
-    done
-    for mif6 in /sys/devices/system/cpu
-    do
-        echo 20000000 > "$mif6/cpu6/cpufreq/scaling_min_freq"
-        echo 20000000 > "$mif6/cpu7/cpufreq/scaling_min_freq"
     done
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_min_freq
