@@ -1,5 +1,3 @@
-#!/system/bin/sh
-
 # Sync to data in the rare case a device crashes
 sync
 
@@ -20,17 +18,9 @@ BASEDIR=/data/adb/modules/SakuraAi
 LOG=/storage/emulated/0/SakuraAi/Balance.log
 
 # CPU SET
-for cpus in /sys/devices/system/cpu
-    do
-        echo 1 > "$cpus/cpu0/online"
-        echo 1 > "$cpus/cpu1/online"
-        echo 1 > "$cpus/cpu2/online"
-        echo 1 > "$cpus/cpu3/online"
-        echo 1 > "$cpus/cpu4/online"
-        echo 1 > "$cpus/cpu5/online"
-        echo 1 > "$cpus/cpu6/online"
-        echo 1 > "$cpus/cpu7/online"
-    done
+for cpu in /sys/devices/system/cpu/cpu[0-7]; do
+    echo 1 > "$cpu/online"
+done
     
 for policy in /sys/devices/system/cpu/cpufreq/policy*; do
     chmod 644 "$policy/scaling_governor"
@@ -57,23 +47,14 @@ fi
 echo "coarse_demand" > /sys/class/misc/mali0/device/power_policy
 echo 1 > /proc/ppm/enabled
 
-# CPU SET
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_min_freq
-for maf0 in /sys/devices/system/cpu
-    do
-        echo 1400000 > "$maf0/cpu0/cpufreq/scaling_max_freq"
-        echo 1400000 > "$maf0/cpu1/cpufreq/scaling_max_freq"
-        echo 1400000 > "$maf0/cpu2/cpufreq/scaling_max_freq"
-        echo 1400000 > "$maf0/cpu3/cpufreq/scaling_max_freq"
-    done
-    for mif0 in /sys/devices/system/cpu
-    do
-        echo 500000 > "$mif0/cpu0/cpufreq/scaling_min_freq"
-        echo 500000 > "$mif0/cpu1/cpufreq/scaling_min_freq"
-        echo 500000 > "$mif0/cpu2/cpufreq/scaling_min_freq"
-        echo 500000 > "$mif0/cpu3/cpufreq/scaling_min_freq"
-    done
+for cpu in /sys/devices/system/cpu/cpu[0-3]; do
+    echo 1400000 > "$cpu/cpufreq/scaling_max_freq"
+done
+for cpu in /sys/devices/system/cpu/cpu[0-3]; do
+    echo 500000 > "$cpu/cpufreq/scaling_min_freq"
+done
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_min_freq
 
@@ -106,29 +87,22 @@ for sch in /proc/sys/kernel
     
 for device in /sys/block/*
 do
-    # Skip if not a block device
     if [ ! -d "$device/queue" ]; then
         continue
     fi
-
     queue="$device/queue"
-    
-    # Check if the device is rotational (HDD) or non-rotational (SSD)
     rotational=$(cat "$queue/rotational")
-
     echo 0 > "$queue/add_random"
     echo 0 > "$queue/iostats"
     echo 2 > "$queue/nomerges"
     echo 2 > "$queue/rq_affinity"
-    
-    # If the device is SSD (rotational = 0), apply SSD-specific settings
     if [ "$rotational" -eq 0 ]; then
         echo 0 > "$queue/rotational"
     fi
-
     echo 128 > "$queue/nr_requests"
     echo 2048 > "$queue/read_ahead_kb"
 done
+
 # Power Level
 for pl in /sys/devices/system/cpu/perf
     do
@@ -176,7 +150,6 @@ for cs in /dev/cpuset
         echo 0 > "$cs/foreground/sched_load_balance"
     done
 
-sleep 1
 # Set balance
 setprop sakuraai.mode balance
 echo " •> Sakura Bloom activated at $(date "+%H:%M:%S")" >> $LOG
