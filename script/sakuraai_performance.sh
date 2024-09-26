@@ -46,10 +46,10 @@ echo 0 > /proc/ppm/enabled
 
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_min_freq
-for cpu in /sys/devices/system/cpu/cpu[0-3]; do
+for cpu in /sys/devices/system/cpu/cpu[0-6]; do
     echo 20000000 > "$cpu/cpufreq/scaling_max_freq"
 done
-for cpu in /sys/devices/system/cpu/cpu[0-3]; do
+for cpu in /sys/devices/system/cpu/cpu[0-6]; do
     echo 20000000 > "$cpu/cpufreq/scaling_min_freq"
 done
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
