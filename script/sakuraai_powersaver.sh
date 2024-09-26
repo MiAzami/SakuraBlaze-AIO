@@ -19,10 +19,15 @@ read_file(){
 BASEDIR=/data/adb/modules/SakuraAi
 LOG=/storage/emulated/0/SakuraAi/Powersaver.log
 
-echo "0" > /sys/devices/system/cpu/cpu2/online
-echo "0" > /sys/devices/system/cpu/cpu3/online
-echo "powersave" > /sys/class/devfreq/mtk-dvfsrc-devfreq/governor
-echo "powersave" > /sys/class/devfreq/13000000.mali/governor
+for cpu in /sys/devices/system/cpu/cpu[2-3]; do
+    echo 0 > "$cpu/online"
+done
+for device in /sys/class/devfreq/*; do
+    if [ -f "$device/governor" ]; then
+        chmod 644 "$device/governor"
+        echo "powersave" > "$device/governor"
+    fi
+done
 
 # Set powersave
 setprop sakuraai.mode powersaver
