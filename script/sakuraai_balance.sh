@@ -19,8 +19,6 @@ read_file(){
 BASEDIR=/data/adb/modules/SakuraAi
 LOG=/storage/emulated/0/SakuraAi/Balance.log
 
-service call SurfaceFlinger 1008 i32 1
-
 # CPU SET
 for cpus in /sys/devices/system/cpu
     do
@@ -34,31 +32,40 @@ for cpus in /sys/devices/system/cpu
         echo 1 > "$cpus/cpu7/online"
     done
     
-# CPU Governor
-chmod 644 /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
-echo "schedutil" > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
-chmod 644 /sys/devices/system/cpu/cpufreq/policy6/scaling_governor
-echo "schedutil" > /sys/devices/system/cpu/cpufreq/policy6/scaling_governor
-echo "5000" > /sys/devices/system/cpu/cpufreq/policy6/schedutil/rate_limit_us
-echo "5000" > /sys/devices/system/cpu/cpufreq/policy0/schedutil/rate_limit_us
+for policy in /sys/devices/system/cpu/cpufreq/policy*; do
+    chmod 644 "$policy/scaling_governor"
+    echo "schedutil" > "$policy/scaling_governor"
+    if [ -f "$policy/schedutil/rate_limit_us" ]; then
+        chmod 644 "$policy/schedutil/rate_limit_us"
+        echo "4000" > "$policy/schedutil/rate_limit_us"
+    fi
+done
 
-# GPU Configure
-echo "-1" > /proc/gpufreqv2/fix_target_opp_index
-echo "simple_ondemand" > /sys/class/devfreq/mtk-dvfsrc-devfreq/governor
-echo "simple_ondemand" > /sys/class/devfreq/13000000.mali/governor
+for device in /sys/class/devfreq/*; do
+    if [ -f "$device/governor" ]; then
+        chmod 644 "$device/governor"
+        echo "simple_ondemand" > "$device/governor"
+    fi
+done
+
+if [ -d /proc/gpufreq ]; then
+	apply "0" /proc/gpufreq/gpufreq_opp_freq 2>/dev/null
+elif [ -d /proc/gpufreqv2 ]; then
+	apply -1 /proc/gpufreqv2/fix_target_opp_index
+fi
+
 echo "coarse_demand" > /sys/class/misc/mali0/device/power_policy
+echo 1 > /proc/ppm/enabled
 
 # CPU SET
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_min_freq
 for maf0 in /sys/devices/system/cpu
     do
-        echo 1500000 > "$maf0/cpu0/cpufreq/scaling_max_freq"
-        echo 1500000 > "$maf0/cpu1/cpufreq/scaling_max_freq"
-        echo 1500000 > "$maf0/cpu2/cpufreq/scaling_max_freq"
-        echo 1500000 > "$maf0/cpu3/cpufreq/scaling_max_freq"
-        echo 1500000 > "$maf0/cpu4/cpufreq/scaling_max_freq"
-        echo 1500000 > "$maf0/cpu5/cpufreq/scaling_max_freq"
+        echo 1400000 > "$maf0/cpu0/cpufreq/scaling_max_freq"
+        echo 1400000 > "$maf0/cpu1/cpufreq/scaling_max_freq"
+        echo 1400000 > "$maf0/cpu2/cpufreq/scaling_max_freq"
+        echo 1400000 > "$maf0/cpu3/cpufreq/scaling_max_freq"
     done
     for mif0 in /sys/devices/system/cpu
     do
@@ -66,18 +73,6 @@ for maf0 in /sys/devices/system/cpu
         echo 500000 > "$mif0/cpu1/cpufreq/scaling_min_freq"
         echo 500000 > "$mif0/cpu2/cpufreq/scaling_min_freq"
         echo 500000 > "$mif0/cpu3/cpufreq/scaling_min_freq"
-        echo 500000 > "$mif0/cpu4/cpufreq/scaling_min_freq"
-        echo 500000 > "$mif0/cpu5/cpufreq/scaling_min_freq"
-    done
-    for maf6 in /sys/devices/system/cpu
-    do
-        echo 22000000 > "$maf6/cpu6/cpufreq/scaling_max_freq"
-        echo 22000000 > "$maf6/cpu7/cpufreq/scaling_max_freq"
-    done
-    for mif6 in /sys/devices/system/cpu
-    do
-        echo 725000 > "$mif6/cpu6/cpufreq/scaling_min_freq"
-        echo 725000 > "$mif6/cpu7/cpufreq/scaling_min_freq"
     done
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_min_freq
@@ -150,7 +145,7 @@ for vm in /proc/sys/vm
     do
         echo 35 > "$vm/dirty_background_ratio"
         echo 30 > "$vm/dirty_ratio"
-        echo 100 > "$vm/vfs_cache_pressure"
+        echo 120 > "$vm/vfs_cache_pressure"
         echo 400 > "$vm/dirty_expire_centisecs"
         echo 6000 > "$vm/dirty_writeback_centisecs"
         echo 0 > "$vm/oom_dump_tasks"
