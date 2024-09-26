@@ -160,7 +160,7 @@ for vm in /proc/sys/vm
     do
         echo 10 > "$vm/dirty_background_ratio"
         echo 15 > "$vm/dirty_ratio"
-        echo 150 > "$vm/vfs_cache_pressure"
+        echo 180 > "$vm/vfs_cache_pressure"
         echo 3000 > "$vm/dirty_expire_centisecs"
         echo 5000 > "$vm/dirty_writeback_centisecs"
         echo 0 > "$vm/oom_dump_tasks"
