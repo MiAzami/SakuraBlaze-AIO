@@ -88,7 +88,6 @@ echo 8 1 > /proc/ppm/policy_status  # Disable LCM_OFF (Display off throttling)
 echo 6 0 > /proc/ppm/policy_status  # Enable HARD_USER_LIMIT
 echo 9 0 > /proc/ppm/policy_status  # Enable SYS_BOOST
 
-# Set permissions to allow read/write on frequency scaling
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
 chmod 644 /sys/devices/system/cpu/*/cpufreq/scaling_min_freq
 
@@ -106,7 +105,7 @@ for path in /sys/devices/system/cpu/cpufreq/policy*; do
     fi
 
     cluster=$((cluster + 1))  
-
+done
 
 for cpu in /sys/devices/system/cpu/cpu[0-7]; do  
     if [ -d "$cpu/cpufreq" ]; then
@@ -125,7 +124,6 @@ done
 # Reset permissions to read-only for scaling frequencies
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_max_freq
 chmod 444 /sys/devices/system/cpu/*/cpufreq/scaling_min_freq
-
 
 
 # Check if the gpufreq_limit_table file exists
