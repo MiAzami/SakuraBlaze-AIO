@@ -105,15 +105,32 @@ deploy() {
         return
     fi
 
-    # Init
-    set_perm "$BPATH/busybox*" 0 0 777
+	# Init
+	set_perm "$BPATH/busybox*" 0 0 777
 
-    # Detect Architecture
-    case "$ARCH" in
-        "arm64")
-            mv -f $BPATH/busybox-arm64 $a/busybox
-            ;;
-    esac
+	# Detect Architecture
+
+	case "$ARCH" in
+	"arm64")
+		mv -f $BPATH/busybox-arm64 $a/busybox
+		ui_print "- $ARCH arch detected."
+		;;
+
+	"arm")
+		mv -f $BPATH/busybox-arm $a/busybox
+		ui_print "- $ARCH arch detected."
+		;;
+
+	"x86")
+		mv -f $BPATH/busybox-x86 $a/busybox
+		ui_print "- $ARCH arch detected"
+		;;
+
+	"x64")
+		mv -f $BPATH/busybox-x64 $a/busybox
+		ui_print "- $ARCH arch detected"
+		;;
+	esac
 }
 
 # If there's no existing module, clean up any other busybox modules
