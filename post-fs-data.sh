@@ -30,28 +30,5 @@ if [ ! -e /system/xbin ]; then
 fi
 }
 
-uninstall_busybox()
-{
-    rm -rf $MODDIR/system/xbin/busybox-arm64
-    rm -rf $MODDIR/system/xbin/busybox
-}
-
-
 # Install built-in magisk busybox
 #install_busybox
-
-#uninstall_busybox
-echo 3 > /proc/sys/vm/drop_caches
-# Deepsleep functions
-doze_disable()
-{
-   cmd tare clear-vip;for a in $(cmd package list packages -U google|sed "s/\ uid//g"|sort);do cmd app_hibernation set-state "$(echo $a|cut -f2 -d:)" true;cmd tare set-vip "$(echo $a|cut -f3 -d:)" "$(echo $a|cut -f2 -d:)" true;done
-}
-
-doze_enable()
-{
-    cmd tare clear-vip;for a in $(cmd package list packages -U google|sed "s/\ uid//g"|sort);do cmd app_hibernation set-state "$(echo $a|cut -f2 -d:)" false;cmd tare set-vip "$(echo $a|cut -f3 -d:)" "$(echo $a|cut -f2 -d:)" false;done
-}
-
-# Install gms doze patch
-#gms_doze_patch

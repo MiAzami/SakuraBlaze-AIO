@@ -1,6 +1,8 @@
 #!/system/bin/sh
 #By MiAzami
 
+sync
+
 # Waiting for boot completed
 while [ "$(getprop sys.boot_completed | tr -d '\r')" != "1" ]; do sleep 5; done
 
@@ -78,19 +80,11 @@ doverlay()
     service call SurfaceFlinger 1008 i32 1
 }
 
-# enable overlay HW
-eoverlay()
-{
-    service call SurfaceFlinger 1008 i32 0
-}
-
 # Advanced FPSGO Settings
 fpsgo()
 {
     echo "15" > /sys/module/mtk_fpsgo/parameters/bhr_opp
     echo "1" > /sys/module/mtk_fpsgo/parameters/bhr_opp_l
-    echo "1" > /sys/module/mtk_fpsgo/parameters/boost_affinity
-    echo "1" > /sys/module/mtk_fpsgo/parameters/xgf_uboost
     echo "90" > /sys/module/mtk_fpsgo/parameters/uboost_enhance_f
     echo "1" > /sys/module/mtk_fpsgo/parameters/gcc_fps_margin
     echo "90" > /sys/module/mtk_fpsgo/parameters/rescue_enhance_f
@@ -99,101 +93,115 @@ fpsgo()
     echo "1" > /sys/module/mtk_fpsgo/parameters/fstb_consider_deq
     echo "5" > /sys/pnpmgr/fpsgo_boost/fstb/fstb_tune_quantile
     echo "0" > /sys/pnpmgr/fpsgo_boost/fstb/fstb_tune_error_threshold
-    echo "0" > /sys/pnpmgr/fpsgo_boost/fstb/margin_mode
-    echo "15" > /sys/pnpmgr/fpsgo_boost/fbt/bhr_opp
+    echo "1" > /sys/pnpmgr/fpsgo_boost/fstb/margin_mode
+    echo "10" > /sys/pnpmgr/fpsgo_boost/fbt/bhr_opp
     echo "1" > /sys/pnpmgr/fpsgo_boost/fbt/adjust_loading
     echo "1" > /sys/pnpmgr/fpsgo_boost/fbt/dyn_tgt_time_en
     echo "0" > /sys/pnpmgr/fpsgo_boost/fbt/floor_opp
     echo "90" > /sys/pnpmgr/fpsgo_boost/fbt/rescue_enhance_f
+    echo "80" > /sys/module/mtk_fpsgo/parameters/run_time_percent
+    echo "1" > /sys/module/mtk_fpsgo/parameters/loading_ignore_enable
+    echo "80" > /sys/module/mtk_fpsgo/parameters/kmin
     echo "90" > /sys/pnpmgr/fpsgo_boost/fbt/rescue_opp_c
     echo "90" > /sys/pnpmgr/fpsgo_boost/fbt/rescue_opp_f
     echo "90" > /sys/pnpmgr/fpsgo_boost/fbt/rescue_percent
     echo "1" > /sys/pnpmgr/fpsgo_boost/fbt/ultra_rescue
+    echo 100 > /sys/module/ged/parameters/gpu_cust_upbound_freq
+    echo 100 > /sys/module/ged/parameters/gpu_cust_boost_freq
+    echo 100 > /sys/pnpmgr/fpsgo_boost/fstb/fstb_tune_quantile
 }
 
+fpsgo2()
+{
+    # Set FPSGO fstb parameters
+    echo 1 > /sys/kernel/fpsgo/fstb/boost_ta
+    echo 0 > /sys/kernel/fpsgo/fstb/enable_switch_sync_flag
+
+    # Set GPU boost level
+    echo 101 > /sys/kernel/ged/hal/gpu_boost_level
+
+    # Set GED parameters
+    echo 1 > /sys/module/ged/parameters/ged_smart_boost
+    echo 1 > /sys/module/ged/parameters/enable_gpu_boost
+    echo 1 > /sys/module/ged/parameters/ged_boost_enable
+    echo 1 > /sys/module/ged/parameters/boost_gpu_enable
+    echo 1 > /sys/module/ged/parameters/gpu_dvfs_enable
+    echo 1 > /sys/module/ged/parameters/gpu_idle
+    echo 0 > /sys/module/ged/parameters/is_GED_KPI_enabled
+
+    # Set additional GPU boost parameters
+    echo 1 > /sys/module/ged/parameters/gx_frc_mode
+    echo 1 > /sys/module/ged/parameters/gx_boost_on
+    echo 1 > /sys/module/ged/parameters/gx_game_mode
+    echo 1 > /sys/module/ged/parameters/gx_3D_benchmark_on
+    echo 1 > /sys/module/ged/parameters/cpu_boost_policy
+    echo 1 > /sys/module/ged/parameters/boost_extra
+
+    # Set PNPMGR parameters
+    echo 1 > /sys/pnpmgr/fpsgo_boost/boost_mode
+    echo 1 > /sys/pnpmgr/install
+    echo 1 > /sys/pnpmgr/mwn
+
+    # Set MTK FPSGo parameters
+    echo 1 > /sys/module/mtk_fpsgo/parameters/boost_affinity
+    echo 1 > /sys/module/mtk_fpsgo/parameters/boost_LR
+    echo 1 > /sys/module/mtk_fpsgo/parameters/xgf_uboost
+}
 
 # Enable all tweak
-sed -Ei 's/^description=(\[.*][[:space:]]*)?/description=[ 🍃 Planting sakura seeds ] /g' "$MODDIR/module.prop"
-su -lp 2000 -c "cmd notification post -S bigtext -t 'SakuraAI' tag '🍃 Planting sakura seeds'" >/dev/null 2>&1
 
-# Sync to data in the rare case a device crashes
-sync
+su -lp 2000 -c "cmd notification post -S bigtext -t 'MTKVEST BLAZE' tag 'Waiting to Apply'" >/dev/null 2>&1
 
 # Change zram
 #change_zram
 
-# GED Hal ( Kernel) 
-chmod 644 /sys/kernel/fpsgo/fstb/*
-for fbt in /sys/kernel/fpsgo/fstb
-    do
-        echo 1 > "$fbt/boost_ta"
-        echo 0 > "$fbt/enable_switch_sync_flag"
-    done
-    chmod 444 /sys/kernel/fpsgo/fstb/*
-    
-    
-# GED Hal ( Kernel) 
-for gedh in /sys/kernel/ged/hal
-    do
-        echo 101 > "$gedh/gpu_boost_level"
-    done
+#skiavk
 
-# GED Parameter (Module) 
-for gedp in /sys/module/ged/parameters
-    do
-        echo 1 > "$gedp/ged_smart_boost"
-        echo 1 > "$gedp/enable_gpu_boost"
-        echo 1 > "$gedp/ged_boost_enable"
-        echo 1 > "$gedp/boost_gpu_enable"
-        echo 1 > "$gedp/gpu_dvfs_enable"
-        echo 100 > "$gedp/gpu_idle"
-        echo 0 > "$gedp/is_GED_KPI_enabled"
-	done
+#skiagl
 
-# FPSGo (PNPMGR) 
-for pnp in /sys/pnpmgr
-    do
-        echo 1 > "$pnp/fpsgo_boost/boost_mode"
-        echo 1 > "$pnp/install"
-        echo 1 > "$pnp/mwn"
-        echo 100 > "$pnp/fpsgo_boost/fstb/fstb_tune_quantile"
-    done
-    
-# MTKFPS GO Parameter
-for fpsp in /sys/module/mtk_fpsgo/parameters
-    do
-        echo 120 > "$fpsp/boost_affinity"
-        echo 1 > "$fpsp/boost_LR"
-        echo 1 > "$fpsp/xgf_uboost"
-    done
-    
-echo "1" > /sys/module/mtk_core_ctl/parameters/policy_enable
+#doverlay
+
+#fpsgo
+
+#fpsgo2
+
+# Set kernel scheduler parameters for specific apps/libraries
+echo "com.miHoYo.,com.HoYoverse.,UnityMain,libunity.so" > /proc/sys/kernel/sched_lib_name
+echo 255 > /proc/sys/kernel/sched_lib_mask_force
+
+# Set the I/O scheduler to "deadline" for all block devices
+for device in /sys/block/*; do
+    queue="$device/queue"
+    if [ -f "$queue/scheduler" ]; then
+        echo "deadline" > "$queue/scheduler"
+    fi
+done
+
+# Disable fsync
 echo N > /sys/module/sync/parameters/fsync_enabled
 
-# Scheduler I/O
-echo "deadline" > /sys/block/sda/queue/scheduler
-echo "deadline" > /sys/block/sdb/queue/scheduler
-echo "deadline" > /sys/block/sdc/queue/scheduler
-
-#printk
+# Kernel performance configuration
 echo "0 0 0 0" > /proc/sys/kernel/printk
-echo "1" > /sys/module/printk/parameters/console_suspend
-echo "1" > /sys/module/printk/parameters/ignore_loglevel
-echo "0" > /sys/module/printk/parameters/time
 echo "off" > /proc/sys/kernel/printk_devkmsg
+echo "Y" > /sys/module/printk/parameters/console_suspend
+echo "N" > /sys/module/printk/parameters/cpu
+echo "0" > /sys/kernel/printk_mode/printk_mode
+echo "Y" > /sys/module/printk/parameters/ignore_loglevel
+echo "N" > /sys/module/printk/parameters/pid
+echo "N" > /sys/module/printk/parameters/time
+echo "1" > /proc/sys/kernel/sched_child_runs_first
+echo "0" > /sys/kernel/ccci/debug
 
-# Networking tweaks
+# Networking tweaks for low latency
 echo "cubic" > /proc/sys/net/ipv4/tcp_congestion_control
-echo "1" > /proc/sys/net/ipv4/tcp_low_latency
-echo "1" > /proc/sys/net/ipv4/tcp_ecn
-echo "1" > /proc/sys/net/ipv4/tcp_sack
-echo "1" > /proc/sys/net/ipv4/tcp_timestamps
-echo "3" > /proc/sys/net/ipv4/tcp_fastopen
+echo 1 > /proc/sys/net/ipv4/tcp_low_latency
+echo 1 > /proc/sys/net/ipv4/tcp_ecn
+echo 1 > /proc/sys/net/ipv4/tcp_sack
+echo 1 > /proc/sys/net/ipv4/tcp_timestamps
+echo 3 > /proc/sys/net/ipv4/tcp_fastopen
 
-#GPU SCHED
-echo 1 > /sys/devices/platform/soc/13000000.mali/js_ctx_scheduling_mode
-echo 75 > /sys/devices/platform/soc/13000000.mali/js_scheduling_period
-echo 100 > /sys/devices/platform/soc/13000000.mali/dvfs_period
+#additional
+echo "0-7" > /proc/irq/240/smp_affinity_list
 
 # Done
 sleep 1
