@@ -10,3 +10,6 @@ Added Options
 - Update Schedboost
 - etc
   
+# V1766
+Fix CPU 
+Fix & Delete Some Codes
