@@ -1,15 +1,22 @@
 Telegram channel:
 https://t.me/mtkvestg99
 
-# v1765 // Patched Mtkvest BlazeX 122
+V1770
+• Removed CPU Lock
+• Removed Spesificly Function Sensitive
+• Removed some prop
+• Removed Auto Thermal
+• Update Codes some function
+• Improved FPSGo
+• Added FSTRIM
+• Added LowKillerMemory
 
-Added Options
-- Added PPM Policy
-- Update Code CPU
-- Update js_crx ( 1 > 0 )
-- Update Schedboost
-- etc
-  
-# V1766
-Fix CPU 
-Fix & Delete Some Codes
+V1773
+
+Deleted some Selector
+Optimized Kernel Tweak
+Optimized Scheduler
+Optimized Virtual Memory
+Optimized CPU & GPU Throthilng
+Disable Hotplug CPU
+Added DCM_State﻿
