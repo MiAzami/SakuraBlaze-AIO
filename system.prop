@@ -1,132 +1,88 @@
 #このファイルはresetpropによって読み取られます
 #例：dpiを変更する
 #ro.sf.lcd_density = 320
-#commontweak
-ro.vendor.sleep.state=deep sleep
-persist.sys.phh.touch_hint=rotate
-ro.config.low_ram=false
-ro.ril.disable.power.collapse=0
-pm.sleep_mode=1
-ro.config.hw_power_saving=true
-ro.ril.sensor.sleep.control=1
-persist.sys.use_gpu_fps_counter=1
-persist.sys.gpu_perf_mode=1
-debug.performance.tuning=1
-debug.egl.force_msaa=0
-ro.tran_low_battery_60hz_refresh_rate.support=0
-debug.cpurend.vsync=false
 
-# Touch
+# Performance Tuning
+debug.performance.tuning=1
+debug.egl.force_msaa=false
+debug.egl.force_fxaa=false
+debug.egl.force_taa=false
+debug.egl.force_smaa=false
+debug.egl.force_txaa=false
+debug.sf.disable_hw_vsync=true
+debug.hwui.disable_vsync=true
+debug.cpurend.vsync=false
+debug.composition.type=gpu
+persist.sys.ui.hw=1
+debug.egl.hw=1
+persist.sys.sf.native_mode=1
+debug.gralloc.gfx_ubwc_disable=1
+video.accelerate.hw=1
+
+# Power Management
+ro.ril.disable.power.collapse=0
+ro.ril.sensor.sleep.control=1
+ro.vendor.sleep.state=deep sleep
+ro.config.hw_power_saving=true
+pm.sleep_mode=1
+
+# Rendering and UI Optimizations
+debug.sf.disable_client_composition_cache=1
+debug.sf.latch_unsignaled=1
+debug.sf.disable_backpressure=1
+persist.sys.use_16bpp_alpha=1
+
+# Touch and Input
+persist.sys.phh.touch_hint=rotate
+persist.sys.scrollingcache=0
 windowsmgr.max_events_per_sec=120
 ro.min_pointer_dur=3
-video.accelerate.hw=1
 view.scroll_friction=0
-logcat.live=disable
-persist.sys.scrollingcache=0
-touch.pressure.scale=0
+touch.presure.scale=0.001
 
-#Additional
+# Low Memory Killer (LMK) Settings
+ro.config.low_ram=false
+ro.lmk.swap_free_low_percentage=100
+ro.lmk.use_psi=true
+ro.lmk.swap_util_max=100
+ro.lmk.thrashing_limit_decay=25
+ro.lmk.thrashing_limit=80
+ro.lmk.psi_partial_stall_ms=120
+ro.lmk.use_minfree_levels=false
+ro.lmk.critical=0
+
+# Dexopt
+dalvik.vm.minidebuginfo=false
+dalvik.vm.dex2oat-minidebuginfo=false
+dalvik.vm.check-dex-sum=false
+dalvik.vm.checkjni=false
+dalvik.vm.verify-bytecode=false
+pm.dexopt.install=speed 
+pm.dexopt.boot=verify
+pm.dexopt.first-boot=quicken
+pm.dexopt.ab-ota=speed-profile
+dalvik.vm.systemuicompilerfilter=speed-profile 
+dalvik.vm.systemservercompilerfilter=speed-profile
+
+# Networking and Latency
 PERF_RES_NET_BT_AUDIO_LOW_LATENCY=1
 PERF_RES_NET_WIFI_LOW_LATENCY=1
 PERF_RES_NET_MD_WEAK_SIG_OPT=1
 PERF_RES_NET_NETD_BOOST_UID=1
 PERF_RES_NET_MD_HSR_MODE=1
 
-#dexoat
-dalvik.vm.systemuicompilerfilter=speed-profile 
-dalvik.vm.systemservercompilerfilter=speed-profile
-pm.dexopt.install=speed-profile
-
-# Zygote
+# Dalvik and Zygote
 persist.zygote.preload_threads=3
+persist.sys.dalvik.multithread=true
+persist.sys.dalvik.hyperthreading=true
 ro.zygote.disable_gl_preload=false
 ro.zygote.preload.enable=0
 ro.zygote.preload.disable=1
 
-# MTK PERF
+# MTK Performance Boosts
 ro.mtk_perf_fast_start_win=1
 ro.mtk_perf_response_time=1
 ro.mtk_perf_simple_start_win=1
-
-# Dalvik Hyperthread
-persist.sys.dalvik.multithread=true
-persist.sys.dalvik.hyperthreading=true
-
-# 16bit
-persist.sys.use_16bpp_alpha=1
-
-#SurfaceFlinger 
-debug.sf.disable_client_composition_cache=1
-debug.sf.latch_unsignaled=1
-debug.sf.disable_backpressure=1
-debug.sf.enable_gl_backpressure=0
-debug.sf.enable_hwc_vds=1
-
-debug.composition.type
-
-# Set GPU Turbo Boost configurations
-debug.enabletr
-debug.performance.tuning
-hwui.render_dirty_regions
-vendor.gralloc.disable_ubwc
-debug.sf.hw
-debug.egl.hw
-debug.egl.profiler
-ro.vendor.gpu.optimize.level
-ro.vendor.gpu.optimize.preload
-ro.vendor.gpu.optimize.texture_control
-ro.vendor.gpu.optimize.memory_compaction
-ro.vendor.gpu.optimize.fork_detector
-
-# UI Rendering
-debug.overlayui.enable
-persist.sys.ui.hw
-persist.sys.ui.rendering
-
-# GPU Booster
-debug.gralloc.gfx_ubwc_disable
-persist.sys.gpu.rendering
-video.accelerate.hw
-
-# HWUI Compotitions
-debug.hwui.use_buffer_age
-ro.config.enable.hw_accel
-
-# Surfaceflinger
-persist.sys.perf.topAppRenderThreadBoost.enable
-debug.sf.hw
-debug.hwui.render_thread
-debug.skia.threaded_mode
-debug.hwui.render_thread_count
-debug.skia.num_render_threads
-debug.skia.render_thread_priority
-persist.sys.gpu.working_thread_priority
-debug.hwui.profile
-debug.hwui.show_dirty_regions
-debug.hwui.fps_divisor
-debug.hwui.show_non_rect_clip
-debug.hwui.webview_overlays_enabled
-renderthread.skia.reduceopstasksplitting
-debug.hwui.use_hint_manager
-debug.hwui.target_cpu_time_percent
-debug.hwui.skia_tracing_enabled
-debug.hwui.skia_use_perfetto_track_events
-debug.hwui.capture_skp_enabled
-debug.hwui.trace_gpu_resources
-debug.hwui.show_layers_updates
-debug.hwui.skip_empty_damage
-debug.hwui.use_buffer_age
-debug.hwui.use_partial_updates
-debug.hwui.use_gpu_pixel_buffers
-debug.hwui.filter_test_overhead
-debug.hwui.overdraw
-debug.hwui.level
-
-ro.product.model
-ro.product.odm.model
-ro.product.system.model
-ro.product.vendor.model
-ro.product.system_ext.model
 
 ############################################
 
